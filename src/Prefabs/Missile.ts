@@ -35,9 +35,14 @@ export class Missile {
 
     const lastMin = this.minTargetDist;
     this.minTargetDist = Math.min(this.pos.distance(this.target), lastMin);
+    this.speed = this.minTargetDist / 200 + 0.1;
 
-    // distance never changed we reached the target and now we need to go boom
-    if (lastMin == this.minTargetDist) {
+    // If the distance never changed or changed a tiny amount
+    // then we reached the target and now we need to go boom
+    const change = lastMin - this.minTargetDist;
+
+    console.log();
+    if (change < Math.abs(0.1)) {
       this.dead = true;
     }
   }

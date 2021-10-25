@@ -13,14 +13,15 @@
 
   onMount(async () => {
     const ctx = canvas.getContext('2d');
-    let prevTime = new Date().getTime();
+    let prevTime = 0;
     let deltaTime = 0;
-    function gameLoop() {
+
+    function gameLoop(timeMs: number) {
       // clear
       ctx.clearRect(0, 0, $width, $height);
       // calculate delta
-      deltaTime = new Date().getTime() - prevTime;
-      prevTime = new Date().getTime();
+      deltaTime = timeMs - prevTime;
+      prevTime = timeMs;
       // draw
       // buildings
       drawBase(ctx, basePos);
@@ -38,7 +39,7 @@
       requestAnimationFrame(gameLoop);
     }
 
-    gameLoop();
+    gameLoop(0);
   });
 
   function handleMousedown(event) {
