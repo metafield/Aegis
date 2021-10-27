@@ -33,3 +33,15 @@ export function quickDestroy(
     }
   }
 }
+
+export function randomHex() {
+  const { floor, random } = Math
+
+  return floor(random() * 255)
+    .toString(16)
+    .padStart(2, '0')
+}
+// performance: These can be pre-baked rather than ran from the game loop
+export function randomColour() {
+  return '#' + randomHex() + randomHex() + randomHex()
+}

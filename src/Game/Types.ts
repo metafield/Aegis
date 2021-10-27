@@ -13,3 +13,8 @@ export interface GameObject {
   update: (context: Context) => void
   destroy: (context: Context) => void
 }
+
+export interface RadialHitBox {
+  pos: Vector | AbstractVector
+  radius: number
+}

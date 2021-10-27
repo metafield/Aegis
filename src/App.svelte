@@ -39,6 +39,8 @@
       }
 
       // Remove dead objects and invoke destroy
+      quickDestroy(gameObjects, context)
+
       requestAnimationFrame(gameLoop)
     }
 

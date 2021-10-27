@@ -1,5 +1,7 @@
 import type { AbstractVector, Vector } from 'vector2d'
+import { ZERO } from '../Maths/Vector'
 import type { Context, GameObject } from '../Types'
+import { Explosion } from './Explosion'
 
 export class Missile implements GameObject {
   public dead = false
@@ -30,6 +32,7 @@ export class Missile implements GameObject {
   }
 
   update({ deltaTime }: Context) {
+    // TODO: get the vector math down to one line
     this.pos.x += this.direction.x * this.speed * deltaTime
     this.pos.y += this.direction.y * this.speed * deltaTime
 
@@ -47,7 +50,8 @@ export class Missile implements GameObject {
     }
   }
 
-  destroy() {
+  destroy({ gameObjects }: Context) {
     console.log('BOOM')
+    gameObjects.push(new Explosion(this.pos, ZERO()))
   }
 }
