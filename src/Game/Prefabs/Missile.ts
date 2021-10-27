@@ -2,7 +2,7 @@ import type { AbstractVector, Vector } from 'vector2d'
 import type { GameObject } from '../GameObject'
 
 export class Missile implements GameObject {
-  public dead: boolean = false
+  public dead = false
 
   private speed = 0.7
   private minTargetDist = Infinity

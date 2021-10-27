@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import type { GameObject } from './Game/GameObject'
   import { directionToTarget } from './Game/Maths/Utils'
   import { vector } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
@@ -9,7 +10,7 @@
   let canvas: HTMLCanvasElement
   const basePos = vector($width / 2 - 90 / 2, $height - 45)
   const firePoint = vector($width / 2, $height - 45)
-  let missiles: Missile[] = []
+  let objects: GameObject[] = []
 
   onMount(async () => {
     const ctx = canvas.getContext('2d')
@@ -26,16 +27,16 @@
       // buildings
       drawBase(ctx, basePos)
       // Missiles
-      for (let i = 0; i < missiles.length; i++) {
-        missiles[i].draw(ctx)
-        missiles[i].update(deltaTime)
+      for (let i = 0; i < objects.length; i++) {
+        objects[i].draw(ctx)
+        objects[i].update(deltaTime)
       }
       // Clean up dead game objects
-      const died = missiles.filter((m) => m.dead)
+      const died = objects.filter((m) => m.dead)
       // call death script
       died.forEach((m) => m.destroy())
       // remove dead objects
-      missiles = missiles.filter((m) => !m.dead)
+      objects = objects.filter((m) => !m.dead)
       requestAnimationFrame(gameLoop)
     }
 
@@ -46,7 +47,7 @@
     let mouse = vector(event.offsetX, event.offsetY)
     let directionFromBase = directionToTarget(firePoint, mouse)
 
-    missiles.push(new Missile(firePoint.clone(), directionFromBase, mouse))
+    objects.push(new Missile(firePoint.clone(), directionFromBase, mouse))
     // target.set(new Vector(event.offsetX, event.offsetY));
     // add target to the canvas and the outliner
   }

@@ -2,6 +2,7 @@ import type { AbstractVector, Vector } from 'vector2d'
 import type { GameObject } from '../GameObject'
 
 export class Explosion implements GameObject {
+  dead = false
   private radius = 0
 
   constructor(

@@ -1,6 +1,7 @@
 import type { AbstractVector, Vector } from 'vector2d'
 
 export interface GameObject {
+  dead: Boolean
   pos: Vector | AbstractVector
   direction: Vector
 
