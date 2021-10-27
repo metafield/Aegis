@@ -11,7 +11,7 @@ export class Missile implements GameObject {
 
   constructor(
     public pos: Vector | AbstractVector,
-    public direction: Vector,
+    public direction: Vector | AbstractVector,
     public target: Vector
   ) {}
   hitBox?: RadialHitBox
@@ -56,6 +56,6 @@ export class Missile implements GameObject {
 
   destroy({ gameObjects }: Context) {
     console.log('destroy: Missile')
-    gameObjects.push(new Explosion(this.pos, ZERO()))
+    gameObjects.push(new Explosion(this.pos, ZERO))
   }
 }

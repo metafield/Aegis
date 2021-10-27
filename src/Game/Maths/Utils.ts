@@ -1,6 +1,18 @@
 import { Vector } from 'vector2d'
 import type { Context, GameObject } from '../Types'
 
+export const GRAVITY = 9.8
+
+const { floor, random } = Math
+
+export function randomRange(min: number, max: number): number {
+  return floor(random() * max) + min
+}
+
+export function randomDirection() {
+  return floor(random() * 2 - 1)
+}
+
 export function directionToTarget(pos: Vector, target: Vector) {
   let directionNonNormalised = new Vector(
     target.x - pos.x,
@@ -35,8 +47,6 @@ export function quickDestroy(
 }
 
 export function randomHex() {
-  const { floor, random } = Math
-
   return floor(random() * 255)
     .toString(16)
     .padStart(2, '0')

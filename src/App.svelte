@@ -1,8 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { Context, GameObject } from './Game/Types'
-  import { directionToTarget, quickDestroy } from './Game/Maths/Utils'
-  import { vector, ZERO } from './Game/Maths/Vector'
+  import {
+    directionToTarget,
+    quickDestroy,
+    randomDirection,
+  } from './Game/Maths/Utils'
+  import { vector } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
   import { height, width } from './store/game'
@@ -19,11 +23,13 @@
       gameObjects,
       ctx,
     } as Context
+
     let prevTime = 0
     let deltaTime = 0
 
+    let enemySpawnCD = 2000
+
     // temp: add comets
-    gameObjects.push(new Comet(vector(100, 100), ZERO()))
 
     function gameLoop(timeMs: number) {
       // clear
@@ -32,14 +38,24 @@
       // Time - calculate delta
       deltaTime = timeMs - prevTime
       prevTime = timeMs
-      // update context with new deltaTime
       context.deltaTime = deltaTime
-
-      // Draw
 
       // TODO: (temp) add base
       drawBase(ctx, basePos)
 
+      // Gameplay Director
+
+      // spawn things if they are able
+      enemySpawnCD -= deltaTime
+      if (enemySpawnCD <= 0) {
+        gameObjects.push(
+          new Comet(vector(400, 0), vector(randomDirection(), 0))
+        )
+
+        enemySpawnCD = 2000
+      }
+
+      // Draw
       for (let i = 0; i < gameObjects.length; i++) {
         gameObjects[i].draw(context)
         gameObjects[i].update(context)

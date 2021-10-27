@@ -7,7 +7,7 @@ export interface Context {
 export interface GameObject {
   dead: Boolean
   pos: Vector | AbstractVector
-  direction: Vector
+  direction: Vector | AbstractVector
 
   hitBox?: RadialHitBox
   isTriggerable?: boolean
