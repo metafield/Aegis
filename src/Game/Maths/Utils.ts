@@ -1,5 +1,6 @@
 import { Vector } from 'vector2d'
 import type { Context, GameObject } from '../Types'
+import { LEFT, RIGHT } from './Vector'
 
 export const GRAVITY = 9.8
 
@@ -11,6 +12,10 @@ export function randomRange(min: number, max: number): number {
 
 export function randomDirection() {
   return floor(random() * 2 - 1)
+}
+
+export function randomLeftRight() {
+  return randomRange(1, 2) % 2 == 0 ? LEFT : RIGHT
 }
 
 export function directionToTarget(pos: Vector, target: Vector) {

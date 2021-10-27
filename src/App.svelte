@@ -4,7 +4,7 @@
   import {
     directionToTarget,
     quickDestroy,
-    randomDirection,
+    randomLeftRight,
   } from './Game/Maths/Utils'
   import { vector } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
@@ -48,9 +48,7 @@
       // spawn things if they are able
       enemySpawnCD -= deltaTime
       if (enemySpawnCD <= 0) {
-        gameObjects.push(
-          new Comet(vector(400, 0), vector(randomDirection(), 0))
-        )
+        gameObjects.push(new Comet(vector(400, 0), randomLeftRight()))
 
         enemySpawnCD = 2000
       }
