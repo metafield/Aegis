@@ -1,10 +1,13 @@
-import type { Vector } from 'vector2d'
+import type { AbstractVector, Vector } from 'vector2d'
 import type { GameObject } from '../GameObject'
 
 export class Explosion implements GameObject {
   private radius = 0
 
-  constructor(public pos: Vector, public direction: Vector) {}
+  constructor(
+    public pos: Vector | AbstractVector,
+    public direction: Vector
+  ) {}
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = '#0f0'

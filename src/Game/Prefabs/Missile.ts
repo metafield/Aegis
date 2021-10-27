@@ -1,4 +1,4 @@
-import type { Vector } from 'vector2d'
+import type { AbstractVector, Vector } from 'vector2d'
 import type { GameObject } from '../GameObject'
 
 export class Missile implements GameObject {
@@ -8,7 +8,7 @@ export class Missile implements GameObject {
   private minTargetDist = Infinity
 
   constructor(
-    public pos: Vector,
+    public pos: Vector | AbstractVector,
     public direction: Vector,
     public target: Vector
   ) {}
