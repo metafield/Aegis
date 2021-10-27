@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { GameObject } from './Game/GameObject'
+  import type { GameObject } from './Game/Types'
   import { directionToTarget } from './Game/Maths/Utils'
   import { vector } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'

@@ -9,3 +9,8 @@ export interface GameObject {
   update: (deltaTime: number) => void
   destroy: () => void
 }
+
+export interface Context {
+  ctx: CanvasRenderingContext2D
+  objects: GameObject[]
+}

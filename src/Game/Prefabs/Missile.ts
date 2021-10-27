@@ -1,5 +1,5 @@
 import type { AbstractVector, Vector } from 'vector2d'
-import type { GameObject } from '../GameObject'
+import type { GameObject } from '../Types'
 
 export class Missile implements GameObject {
   public dead = false
