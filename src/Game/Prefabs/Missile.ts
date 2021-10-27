@@ -1,5 +1,5 @@
 import type { AbstractVector, Vector } from 'vector2d'
-import type { GameObject } from '../Types'
+import type { Context, GameObject } from '../Types'
 
 export class Missile implements GameObject {
   public dead = false
@@ -13,7 +13,7 @@ export class Missile implements GameObject {
     public target: Vector
   ) {}
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw({ ctx }: Context) {
     // target marker
     ctx.strokeStyle = '#f00'
     ctx.lineWidth = 2
@@ -29,7 +29,7 @@ export class Missile implements GameObject {
     ctx.stroke()
   }
 
-  update(deltaTime: number) {
+  update({ deltaTime }: Context) {
     this.pos.x += this.direction.x * this.speed * deltaTime
     this.pos.y += this.direction.y * this.speed * deltaTime
 
