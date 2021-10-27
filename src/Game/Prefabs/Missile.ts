@@ -1,6 +1,6 @@
 import type { AbstractVector, Vector } from 'vector2d'
 import { ZERO } from '../Maths/Vector'
-import type { Context, GameObject } from '../Types'
+import type { Context, GameObject, RadialHitBox } from '../Types'
 import { Explosion } from './Explosion'
 
 export class Missile implements GameObject {
@@ -14,6 +14,10 @@ export class Missile implements GameObject {
     public direction: Vector,
     public target: Vector
   ) {}
+  hitBox?: RadialHitBox
+  isTriggerable?: boolean
+
+  checkCollisions: (context: Context) => void
 
   draw({ ctx }: Context) {
     // target marker
@@ -51,7 +55,7 @@ export class Missile implements GameObject {
   }
 
   destroy({ gameObjects }: Context) {
-    console.log('BOOM')
+    console.log('destroy: Missile')
     gameObjects.push(new Explosion(this.pos, ZERO()))
   }
 }

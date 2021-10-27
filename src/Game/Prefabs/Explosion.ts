@@ -40,18 +40,43 @@ export class Explosion implements GameObject {
     ctx.stroke()
   }
 
-  update({ deltaTime }: Context) {
-    this.radius = this.radius + deltaTime / 10
+  update(context: Context) {
+    this.radius = this.radius + context.deltaTime / 10
 
     // update hit box
     this.hitBox.radius = this.radius
     this.hitBox.pos = this.pos.clone()
 
+    // check collisions
+    this.checkCollisions(context)
+
     // death condition
     if (this.radius > this.maxSize) this.dead = true
   }
 
+  checkCollisions({ gameObjects }: Context) {
+    let distanceFromCenters = Infinity
+    let actualDistance = Infinity
+
+    for (let i = 0; i < gameObjects.length; i++) {
+      if (gameObjects[i].isTriggerable) {
+        distanceFromCenters = gameObjects[i].hitBox.pos.distance(
+          this.hitBox.pos
+        )
+
+        actualDistance =
+          distanceFromCenters -
+          this.hitBox.radius -
+          gameObjects[i].hitBox.radius
+
+        if (actualDistance <= 0) {
+          gameObjects[i].trigger(this)
+        }
+      }
+    }
+  }
+
   destroy() {
-    console.log('destroy: explosion done')
+    console.log('destroy: Explosion')
   }
 }

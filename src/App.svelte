@@ -2,10 +2,11 @@
   import { onMount } from 'svelte'
   import type { Context, GameObject } from './Game/Types'
   import { directionToTarget, quickDestroy } from './Game/Maths/Utils'
-  import { vector } from './Game/Maths/Vector'
+  import { vector, ZERO } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
   import { height, width } from './store/game'
+  import { Comet } from './Game/Prefabs/Comet'
 
   let canvas: HTMLCanvasElement
   const basePos = vector($width / 2 - 90 / 2, $height - 45)
@@ -21,18 +22,24 @@
     let prevTime = 0
     let deltaTime = 0
 
+    // temp: add comets
+    gameObjects.push(new Comet(vector(100, 100), ZERO()))
+
     function gameLoop(timeMs: number) {
       // clear
       ctx.clearRect(0, 0, $width, $height)
-      // calculate delta
+
+      // Time - calculate delta
       deltaTime = timeMs - prevTime
       prevTime = timeMs
       // update context with new deltaTime
       context.deltaTime = deltaTime
-      // draw
-      // buildings
+
+      // Draw
+
+      // TODO: (temp) add base
       drawBase(ctx, basePos)
-      // Missiles
+
       for (let i = 0; i < gameObjects.length; i++) {
         gameObjects[i].draw(context)
         gameObjects[i].update(context)
@@ -54,6 +61,7 @@
     gameObjects.push(
       new Missile(firePoint.clone(), directionFromBase, mouse)
     )
+    console.log(gameObjects)
     // target.set(new Vector(event.offsetX, event.offsetY));
     // add target to the canvas and the outliner
   }
