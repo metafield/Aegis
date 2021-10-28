@@ -30,7 +30,7 @@
     let prevTime = 0
     let deltaTime = 0
 
-    let enemySpawnCD = 500
+    let enemySpawnCD = 800
     let enemySpawnTimer = enemySpawnCD
 
     // temp: add comets
