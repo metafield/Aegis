@@ -1,5 +1,23 @@
 import { Vector } from 'vector2d'
 import type { Context, GameObject } from '../Types'
+import { LEFT, RIGHT } from './Vector'
+
+export const GRAVITY = 9.8
+
+const { floor, random } = Math
+
+export function randomRange(min: number, max: number): number {
+  return floor(random() * max) + min
+}
+
+export function randomDirection() {
+  return floor(random() * 2 - 1)
+}
+
+export function randomLeftRight() {
+  return randomRange(1, 2) % 2 == 0 ? LEFT.clone() : RIGHT.clone()
+}
+
 
 export function directionToTarget(pos: Vector, target: Vector) {
   let directionNonNormalised = new Vector(
@@ -35,6 +53,7 @@ export function quickDestroy(
 }
 
 export function randomHex() {
+
   const { floor, random } = Math
 
   return floor(random() * 255)

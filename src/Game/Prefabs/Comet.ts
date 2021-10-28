@@ -1,5 +1,7 @@
 import type { AbstractVector, Vector } from 'vector2d'
-import { randomColour } from '../Maths/Utils'
+import { GRAVITY, randomDirection, randomRange } from '../Maths/Utils'
+import { DOWN, LEFT, RIGHT, vector, ZERO } from '../Maths/Vector'
+
 import type {
   Context,
   GameObject,
@@ -7,40 +9,66 @@ import type {
   Triggerable,
 } from '../Types'
 
+import { Explosion } from './Explosion'
+import { Fader } from './Fader'
+
+
 export class Comet implements GameObject, Triggerable {
   dead = false
   isTriggerable = true
   hitBox = {} as RadialHitBox
 
-  private radius = 20
+  private speed = 44
   private colour = '#fff'
+  private divideRadius = 24
+  private invulnTime = 400
+  private invuln = this.invulnTime
+  private trailInterval = 4 * this.speed
+  private trail = this.trailInterval
+  private gravity = DOWN.clone().mulS(GRAVITY * 10)
+  private velocity = ZERO.clone()
 
   constructor(
     public pos: Vector | AbstractVector,
-    public direction: Vector
+    public direction: Vector | AbstractVector,
+    public radius: number = randomRange(5, 35)
   ) {
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
+
+    if (this.radius > this.divideRadius) {
+      this.colour = '#ddd'
+    }
+
+    this.velocity.add(this.direction).mulS(this.speed).add(this.gravity)
   }
 
   trigger(evoker: GameObject) {
+    if (this.invuln > 0) return
+
     // can set the trigger to false for a one shot
     // or could use a timeout/cool down that we minus deltaTime from
     this.colour = '#00f'
     this.isTriggerable = false
-    console.log('I was hit by ', evoker)
+    this.kill(this)
   }
 
   checkCollisions: (context: Context) => void
 
-  draw({ ctx }: Context) {
+  draw({ ctx, deltaTime }: Context) {
+    let rev = this.direction
+      .clone()
+      .reverse()
+      .mulS(deltaTime / this.speed)
+
+
     ctx.fillStyle = this.colour
     ctx.beginPath()
     ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true)
     ctx.fill()
 
     // hit box
-    ctx.strokeStyle = '#f00'
+    ctx.strokeStyle = '#000'
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.arc(
@@ -52,18 +80,66 @@ export class Comet implements GameObject, Triggerable {
       true
     )
     ctx.stroke()
+
+    // cover
+    let pos = this.pos.clone()
+
+    // TODO: performance move this up
+    let retro = pos.add(this.velocity.clone().reverse().divS(this.speed))
+
+    ctx.fillStyle = `#fff`
+    ctx.beginPath()
+    ctx.arc(retro.x, retro.y, this.radius, 0, Math.PI * 2, true)
+    ctx.fill()
   }
 
-  update({ deltaTime }: Context) {
-    // update hit box
+  kill(killer: GameObject) {
+    if (this.invuln > 0) return
+    this.dead = true
+  }
+
+  update({ deltaTime, vfxObjects }: Context) {
+    this.invuln -= deltaTime
+    this.pos.add(this.velocity.clone().mulS(deltaTime / 1000))
     this.hitBox.radius = this.radius
     this.hitBox.pos = this.pos.clone()
 
+    // drop trails
+    this.trail -= deltaTime
+    if (this.trail < 0) {
+      vfxObjects.unshift(
+        new Fader(
+          this.pos.clone(),
+          this.direction.clone(),
+          this.radius,
+          '#ffbb22',
+          100
+        )
+      )
+
+      this.trail = this.trailInterval
+    }
+
     // death condition
-    // if (this.radius > this.maxSize) this.dead = true
+    // TODO: need height here
+    if (this.pos.y >= 800) this.kill(this)
   }
 
-  destroy() {
+  destroy({ gameObjects }) {
+    // TODO: height here
+    if (this.pos.y >= 800) {
+      gameObjects.push(new Explosion(this.pos, ZERO, 60))
+      return
+    }
+
+    if (this.radius > this.divideRadius) {
+      gameObjects.push(
+        new Comet(this.pos.clone(), LEFT, this.radius / 2),
+        new Comet(this.pos.clone(), RIGHT, this.radius / 2)
+      )
+    } else {
+      gameObjects.push(new Explosion(this.pos, ZERO, 60))
+    }
     console.log('destroy: comet exploded')
   }
 }

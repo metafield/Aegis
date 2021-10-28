@@ -1,8 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { Context, GameObject } from './Game/Types'
-  import { directionToTarget, quickDestroy } from './Game/Maths/Utils'
-  import { vector, ZERO } from './Game/Maths/Vector'
+  import {
+    directionToTarget,
+    quickDestroy,
+    randomDirection,
+    randomLeftRight,
+  } from './Game/Maths/Utils'
+  import { vector } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
   import { height, width } from './store/game'
@@ -12,18 +17,21 @@
   const basePos = vector($width / 2 - 90 / 2, $height - 45)
   const firePoint = vector($width / 2, $height - 45)
   const gameObjects: GameObject[] = []
+  const vfxObjects: GameObject[] = []
 
   onMount(async () => {
     const ctx = canvas.getContext('2d')
     const context = {
       gameObjects,
+      vfxObjects,
       ctx,
     } as Context
+
     let prevTime = 0
     let deltaTime = 0
 
-    // temp: add comets
-    gameObjects.push(new Comet(vector(100, 100), ZERO()))
+    let enemySpawnCD = 800
+    let enemySpawnTimer = enemySpawnCD
 
     function gameLoop(timeMs: number) {
       // clear
@@ -31,20 +39,40 @@
 
       // Time - calculate delta
       deltaTime = timeMs - prevTime
+      // fix for tab switching:
+      if (deltaTime > 50) deltaTime = 50
       prevTime = timeMs
-      // update context with new deltaTime
       context.deltaTime = deltaTime
-
-      // Draw
 
       // TODO: (temp) add base
       drawBase(ctx, basePos)
 
-      for (let i = 0; i < gameObjects.length; i++) {
-        gameObjects[i].draw(context)
-        gameObjects[i].update(context)
+      // Gameplay Director
+
+      // spawn things if they are able
+      enemySpawnTimer -= deltaTime
+      if (enemySpawnTimer <= 0) {
+        gameObjects.push(
+          new Comet(vector(400, 0), randomLeftRight().mulS(Math.random())),
+          new Comet(vector(200, 0), randomLeftRight().mulS(Math.random())),
+          new Comet(vector(600, 0), randomLeftRight().mulS(Math.random()))
+        )
+
+        enemySpawnTimer = enemySpawnCD
       }
 
+      // Draw vfx
+      for (let i = 0; i < vfxObjects.length; i++) {
+        vfxObjects[i].update(context)
+        vfxObjects[i].draw(context)
+      }
+
+      // Draw GO's
+      for (let i = 0; i < gameObjects.length; i++) {
+        gameObjects[i].update(context)
+        gameObjects[i].draw(context)
+      }
+      
       // Remove dead objects and invoke destroy
       quickDestroy(gameObjects, context)
 
@@ -61,7 +89,7 @@
     gameObjects.push(
       new Missile(firePoint.clone(), directionFromBase, mouse)
     )
-    console.log(gameObjects)
+
     // target.set(new Vector(event.offsetX, event.offsetY));
     // add target to the canvas and the outliner
   }

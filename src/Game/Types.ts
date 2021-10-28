@@ -2,12 +2,13 @@ import type { AbstractVector, Vector } from 'vector2d'
 export interface Context {
   ctx: CanvasRenderingContext2D
   gameObjects: GameObject[]
+  vfxObjects: GameObject[]
   deltaTime: number
 }
 export interface GameObject {
   dead: Boolean
   pos: Vector | AbstractVector
-  direction: Vector
+  direction: Vector | AbstractVector
 
   hitBox?: RadialHitBox
   isTriggerable?: boolean

@@ -1,5 +1,6 @@
 import type { AbstractVector, Vector } from 'vector2d'
 import { randomColour } from '../Maths/Utils'
+import { ONE } from '../Maths/Vector'
 import type { Context, GameObject, RadialHitBox } from '../Types'
 
 export class Explosion implements GameObject {
@@ -12,7 +13,8 @@ export class Explosion implements GameObject {
 
   constructor(
     public pos: Vector | AbstractVector,
-    public direction: Vector
+    public direction: Vector | AbstractVector,
+    public maxRadius: number = 30
   ) {
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
@@ -51,7 +53,7 @@ export class Explosion implements GameObject {
     this.checkCollisions(context)
 
     // death condition
-    if (this.radius > this.maxSize) this.dead = true
+    if (this.radius > this.maxRadius) this.dead = true
   }
 
   checkCollisions({ gameObjects }: Context) {
