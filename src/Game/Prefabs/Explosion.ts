@@ -8,6 +8,7 @@ export class Explosion implements GameObject {
 
   public hitBox = {} as RadialHitBox
   private radius = 0
+  private maxSize = 30
   private colour = randomColour()
 
   constructor(

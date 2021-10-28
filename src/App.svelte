@@ -33,8 +33,6 @@
     let enemySpawnCD = 800
     let enemySpawnTimer = enemySpawnCD
 
-    // temp: add comets
-
     function gameLoop(timeMs: number) {
       // clear
       ctx.clearRect(0, 0, $width, $height)
@@ -74,7 +72,7 @@
         gameObjects[i].update(context)
         gameObjects[i].draw(context)
       }
-
+      
       // Remove dead objects and invoke destroy
       quickDestroy(gameObjects, context)
 
@@ -91,6 +89,7 @@
     gameObjects.push(
       new Missile(firePoint.clone(), directionFromBase, mouse)
     )
+
     // target.set(new Vector(event.offsetX, event.offsetY));
     // add target to the canvas and the outliner
   }

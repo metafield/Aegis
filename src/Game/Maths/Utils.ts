@@ -18,6 +18,7 @@ export function randomLeftRight() {
   return randomRange(1, 2) % 2 == 0 ? LEFT.clone() : RIGHT.clone()
 }
 
+
 export function directionToTarget(pos: Vector, target: Vector) {
   let directionNonNormalised = new Vector(
     target.x - pos.x,
@@ -52,6 +53,9 @@ export function quickDestroy(
 }
 
 export function randomHex() {
+
+  const { floor, random } = Math
+
   return floor(random() * 255)
     .toString(16)
     .padStart(2, '0')

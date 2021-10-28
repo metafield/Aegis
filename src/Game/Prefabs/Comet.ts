@@ -8,8 +8,10 @@ import type {
   RadialHitBox,
   Triggerable,
 } from '../Types'
+
 import { Explosion } from './Explosion'
 import { Fader } from './Fader'
+
 
 export class Comet implements GameObject, Triggerable {
   dead = false
@@ -43,6 +45,7 @@ export class Comet implements GameObject, Triggerable {
 
   trigger(evoker: GameObject) {
     if (this.invuln > 0) return
+
     // can set the trigger to false for a one shot
     // or could use a timeout/cool down that we minus deltaTime from
     this.colour = '#00f'
@@ -57,6 +60,7 @@ export class Comet implements GameObject, Triggerable {
       .clone()
       .reverse()
       .mulS(deltaTime / this.speed)
+
 
     ctx.fillStyle = this.colour
     ctx.beginPath()
