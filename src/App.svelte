@@ -4,6 +4,7 @@
   import {
     directionToTarget,
     quickDestroy,
+    randomDirection,
     randomLeftRight,
   } from './Game/Maths/Utils'
   import { vector } from './Game/Maths/Vector'
@@ -27,7 +28,8 @@
     let prevTime = 0
     let deltaTime = 0
 
-    let enemySpawnCD = 2000
+    let enemySpawnCD = 500
+    let enemySpawnTimer = enemySpawnCD
 
     // temp: add comets
 
@@ -37,6 +39,8 @@
 
       // Time - calculate delta
       deltaTime = timeMs - prevTime
+      // fix for tab switching:
+      if (deltaTime > 50) deltaTime = 50
       prevTime = timeMs
       context.deltaTime = deltaTime
 
@@ -46,17 +50,21 @@
       // Gameplay Director
 
       // spawn things if they are able
-      enemySpawnCD -= deltaTime
-      if (enemySpawnCD <= 0) {
-        gameObjects.push(new Comet(vector(400, 0), randomLeftRight()))
+      enemySpawnTimer -= deltaTime
+      if (enemySpawnTimer <= 0) {
+        gameObjects.push(
+          new Comet(vector(400, 0), randomLeftRight().mulS(Math.random())),
+          new Comet(vector(200, 0), randomLeftRight().mulS(Math.random())),
+          new Comet(vector(600, 0), randomLeftRight().mulS(Math.random()))
+        )
 
-        enemySpawnCD = 2000
+        enemySpawnTimer = enemySpawnCD
       }
 
       // Draw
       for (let i = 0; i < gameObjects.length; i++) {
-        gameObjects[i].draw(context)
         gameObjects[i].update(context)
+        gameObjects[i].draw(context)
       }
 
       // Remove dead objects and invoke destroy
@@ -75,7 +83,6 @@
     gameObjects.push(
       new Missile(firePoint.clone(), directionFromBase, mouse)
     )
-    console.log(gameObjects)
     // target.set(new Vector(event.offsetX, event.offsetY));
     // add target to the canvas and the outliner
   }

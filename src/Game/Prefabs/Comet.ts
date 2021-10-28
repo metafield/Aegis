@@ -16,13 +16,15 @@ export class Comet implements GameObject, Triggerable {
   isTriggerable = true
   hitBox = {} as RadialHitBox
 
-  private speed = 12
+  private speed = 44
   private colour = '#fff'
   private divideRadius = 24
   private invulnTime = 400
   private invuln = this.invulnTime
-  private trailInterval = this.speed * 18
+  private trailInterval = 4 * this.speed
   private trail = this.trailInterval
+  private gravity = DOWN.clone().mulS(GRAVITY * 10)
+  private velocity = ZERO.clone()
 
   constructor(
     public pos: Vector | AbstractVector,
@@ -34,8 +36,9 @@ export class Comet implements GameObject, Triggerable {
 
     if (this.radius > this.divideRadius) {
       this.colour = '#ddd'
-      this.speed += 5
     }
+
+    this.velocity.add(this.direction).mulS(this.speed).add(this.gravity)
   }
 
   trigger(evoker: GameObject) {
@@ -49,7 +52,12 @@ export class Comet implements GameObject, Triggerable {
 
   checkCollisions: (context: Context) => void
 
-  draw({ ctx }: Context) {
+  draw({ ctx, deltaTime }: Context) {
+    let rev = this.direction
+      .clone()
+      .reverse()
+      .mulS(deltaTime / this.speed)
+
     ctx.fillStyle = this.colour
     ctx.beginPath()
     ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true)
@@ -68,6 +76,17 @@ export class Comet implements GameObject, Triggerable {
       true
     )
     ctx.stroke()
+
+    // cover
+    let pos = this.pos.clone()
+
+    // TODO: performance move this up
+    let retro = pos.add(this.velocity.clone().reverse().divS(this.speed))
+
+    ctx.fillStyle = `#fff`
+    ctx.beginPath()
+    ctx.arc(retro.x, retro.y, this.radius, 0, Math.PI * 2, true)
+    ctx.fill()
   }
 
   kill(killer: GameObject) {
@@ -77,28 +96,25 @@ export class Comet implements GameObject, Triggerable {
 
   update({ deltaTime, gameObjects }: Context) {
     this.invuln -= deltaTime
+    this.pos.add(this.velocity.clone().mulS(deltaTime / 1000))
+    this.hitBox.radius = this.radius
+    this.hitBox.pos = this.pos.clone()
 
     // drop trails
     this.trail -= deltaTime
     if (this.trail < 0) {
-      gameObjects.push(
+      gameObjects.unshift(
         new Fader(
           this.pos.clone(),
           this.direction.clone(),
           this.radius,
-          this.colour
+          '#ffbb22',
+          100
         )
       )
 
       this.trail = this.trailInterval
     }
-
-    const velocity = this.direction.clone().mulS(deltaTime / this.speed)
-    const gravity = DOWN.clone().mulS((GRAVITY + 8) / this.speed)
-    this.pos.add(velocity).add(gravity)
-
-    this.hitBox.radius = this.radius
-    this.hitBox.pos = this.pos.clone()
 
     // death condition
     // TODO: need height here
@@ -113,8 +129,10 @@ export class Comet implements GameObject, Triggerable {
     }
 
     if (this.radius > this.divideRadius) {
-      gameObjects.push(new Comet(this.pos.clone(), LEFT, this.radius / 2))
-      gameObjects.push(new Comet(this.pos.clone(), RIGHT, this.radius / 2))
+      gameObjects.push(
+        new Comet(this.pos.clone(), LEFT, this.radius / 2),
+        new Comet(this.pos.clone(), RIGHT, this.radius / 2)
+      )
     } else {
       gameObjects.push(new Explosion(this.pos, ZERO, 60))
     }

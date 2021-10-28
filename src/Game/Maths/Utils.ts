@@ -15,7 +15,7 @@ export function randomDirection() {
 }
 
 export function randomLeftRight() {
-  return randomRange(1, 2) % 2 == 0 ? LEFT : RIGHT
+  return randomRange(1, 2) % 2 == 0 ? LEFT.clone() : RIGHT.clone()
 }
 
 export function directionToTarget(pos: Vector, target: Vector) {
