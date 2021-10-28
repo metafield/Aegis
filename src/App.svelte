@@ -17,11 +17,13 @@
   const basePos = vector($width / 2 - 90 / 2, $height - 45)
   const firePoint = vector($width / 2, $height - 45)
   const gameObjects: GameObject[] = []
+  const vfxObjects: GameObject[] = []
 
   onMount(async () => {
     const ctx = canvas.getContext('2d')
     const context = {
       gameObjects,
+      vfxObjects,
       ctx,
     } as Context
 
@@ -61,7 +63,13 @@
         enemySpawnTimer = enemySpawnCD
       }
 
-      // Draw
+      // Draw vfx
+      for (let i = 0; i < vfxObjects.length; i++) {
+        vfxObjects[i].update(context)
+        vfxObjects[i].draw(context)
+      }
+
+      // Draw GO's
       for (let i = 0; i < gameObjects.length; i++) {
         gameObjects[i].update(context)
         gameObjects[i].draw(context)

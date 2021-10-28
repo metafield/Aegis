@@ -94,7 +94,7 @@ export class Comet implements GameObject, Triggerable {
     this.dead = true
   }
 
-  update({ deltaTime, gameObjects }: Context) {
+  update({ deltaTime, vfxObjects }: Context) {
     this.invuln -= deltaTime
     this.pos.add(this.velocity.clone().mulS(deltaTime / 1000))
     this.hitBox.radius = this.radius
@@ -103,7 +103,7 @@ export class Comet implements GameObject, Triggerable {
     // drop trails
     this.trail -= deltaTime
     if (this.trail < 0) {
-      gameObjects.unshift(
+      vfxObjects.unshift(
         new Fader(
           this.pos.clone(),
           this.direction.clone(),

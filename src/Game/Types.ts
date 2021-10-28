@@ -2,6 +2,7 @@ import type { AbstractVector, Vector } from 'vector2d'
 export interface Context {
   ctx: CanvasRenderingContext2D
   gameObjects: GameObject[]
+  vfxObjects: GameObject[]
   deltaTime: number
 }
 export interface GameObject {
