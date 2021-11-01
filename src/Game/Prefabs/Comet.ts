@@ -1,17 +1,16 @@
-import type { AbstractVector, Vector } from 'vector2d'
-import { GRAVITY, randomDirection, randomRange } from '../Maths/Utils'
-import { DOWN, LEFT, RIGHT, vector, ZERO } from '../Maths/Vector'
+import { GRAVITY, randomRange } from '../Maths/Utils'
+import { DOWN, LEFT, RIGHT, ZERO } from '../Maths/Vector'
 
 import type {
   Context,
   GameObject,
   RadialHitBox,
   Triggerable,
+  Vector,
 } from '../Types'
 
 import { Explosion } from './Explosion'
 import { Fader } from './Fader'
-
 
 export class Comet implements GameObject, Triggerable {
   dead = false
@@ -25,12 +24,12 @@ export class Comet implements GameObject, Triggerable {
   private invuln = this.invulnTime
   private trailInterval = 4 * this.speed
   private trail = this.trailInterval
-  private gravity = DOWN.clone().mulS(GRAVITY * 10)
-  private velocity = ZERO.clone()
+  private gravity = DOWN().mulS(GRAVITY * 10)
+  private velocity = ZERO()
 
   constructor(
-    public pos: Vector | AbstractVector,
-    public direction: Vector | AbstractVector,
+    public pos: Vector,
+    public direction: Vector,
     public radius: number = randomRange(5, 35)
   ) {
     this.hitBox.pos = pos.clone()
@@ -60,7 +59,6 @@ export class Comet implements GameObject, Triggerable {
       .clone()
       .reverse()
       .mulS(deltaTime / this.speed)
-
 
     ctx.fillStyle = this.colour
     ctx.beginPath()
@@ -128,17 +126,17 @@ export class Comet implements GameObject, Triggerable {
   destroy({ gameObjects }) {
     // TODO: height here
     if (this.pos.y >= 800) {
-      gameObjects.push(new Explosion(this.pos, ZERO, 60))
+      gameObjects.push(new Explosion(this.pos, ZERO(), 60))
       return
     }
 
     if (this.radius > this.divideRadius) {
       gameObjects.push(
-        new Comet(this.pos.clone(), LEFT, this.radius / 2),
-        new Comet(this.pos.clone(), RIGHT, this.radius / 2)
+        new Comet(this.pos.clone(), LEFT(), this.radius / 2),
+        new Comet(this.pos.clone(), RIGHT(), this.radius / 2)
       )
     } else {
-      gameObjects.push(new Explosion(this.pos, ZERO, 60))
+      gameObjects.push(new Explosion(this.pos, ZERO(), 60))
     }
     console.log('destroy: comet exploded')
   }

@@ -4,7 +4,6 @@
   import {
     directionToTarget,
     quickDestroy,
-    randomDirection,
     randomLeftRight,
   } from './Game/Maths/Utils'
   import { vector } from './Game/Maths/Vector'

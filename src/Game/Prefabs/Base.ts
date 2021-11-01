@@ -1,4 +1,4 @@
-import type { Vector } from 'vector2d'
+import type { Vector } from '../Types'
 
 export function drawBase(ctx: CanvasRenderingContext2D, pos: Vector) {
   ctx.strokeStyle = '#fff'

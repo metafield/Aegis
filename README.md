@@ -42,3 +42,6 @@ continue;
 }
 }
 }
+
+vector type is becoming annoying - refactor to merge vector and abstract
+to make typings look way nice. It does not matter if a vector is using the abstract or not

@@ -1,7 +1,5 @@
-import type { AbstractVector, Vector } from 'vector2d'
 import { randomColour } from '../Maths/Utils'
-import { ONE } from '../Maths/Vector'
-import type { Context, GameObject, RadialHitBox } from '../Types'
+import type { Context, GameObject, RadialHitBox, Vector } from '../Types'
 
 export class Explosion implements GameObject {
   dead = false
@@ -12,8 +10,8 @@ export class Explosion implements GameObject {
   private colour = randomColour()
 
   constructor(
-    public pos: Vector | AbstractVector,
-    public direction: Vector | AbstractVector,
+    public pos: Vector,
+    public direction: Vector,
     public maxRadius: number = 30
   ) {
     this.hitBox.pos = pos.clone()

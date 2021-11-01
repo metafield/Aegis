@@ -1,6 +1,5 @@
-import { AbstractVector, Vector } from 'vector2d'
-import type { Context, GameObject } from '../Types'
-import { LEFT, RIGHT } from './Vector'
+import type { Context, GameObject, Vector } from '../Types'
+import { LEFT, RIGHT, vector } from './Vector'
 
 export const GRAVITY = 9.8
 
@@ -15,17 +14,11 @@ export function randomDirection() {
 }
 
 export function randomLeftRight() {
-  return randomRange(1, 2) % 2 == 0 ? LEFT.clone() : RIGHT.clone()
+  return randomRange(1, 2) % 2 == 0 ? LEFT() : RIGHT()
 }
 
-export function directionToTarget(
-  pos: Vector | AbstractVector,
-  target: Vector | AbstractVector
-) {
-  let directionNonNormalised = new Vector(
-    target.x - pos.x,
-    target.y - pos.y
-  )
+export function directionToTarget(pos: Vector, target: Vector) {
+  let directionNonNormalised = vector(target.x - pos.x, target.y - pos.y)
   return directionNonNormalised.normalise()
 }
 

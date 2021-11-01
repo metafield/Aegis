@@ -1,8 +1,6 @@
-import type { AbstractVector, Vector } from 'vector2d'
 import { randomRange } from '../Maths/Utils'
 
-import type { Context, GameObject } from '../Types'
-import { Explosion } from './Explosion'
+import type { Context, GameObject, Vector } from '../Types'
 
 export class Fader implements GameObject {
   dead = false
@@ -10,8 +8,8 @@ export class Fader implements GameObject {
   private startRadius: number
 
   constructor(
-    public pos: Vector | AbstractVector,
-    public direction: Vector | AbstractVector,
+    public pos: Vector,
+    public direction: Vector,
     public radius: number = randomRange(5, 35),
     public colour: string,
     public rate: number

@@ -1,4 +1,6 @@
-import type { AbstractVector, Vector } from 'vector2d'
+import type Vector2d from 'vector2d'
+
+export type Vector = Vector2d.Vector | Vector2d.AbstractVector
 export interface Context {
   ctx: CanvasRenderingContext2D
   gameObjects: GameObject[]
@@ -7,8 +9,8 @@ export interface Context {
 }
 export interface GameObject {
   dead: Boolean
-  pos: Vector | AbstractVector
-  direction: Vector | AbstractVector
+  pos: Vector
+  direction: Vector
 
   hitBox?: RadialHitBox
   isTriggerable?: boolean
@@ -21,7 +23,7 @@ export interface GameObject {
 }
 
 export interface RadialHitBox {
-  pos: Vector | AbstractVector
+  pos: Vector
   radius: number
 }
 
