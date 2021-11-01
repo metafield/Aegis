@@ -1,5 +1,5 @@
-import { ZERO } from '../Maths/Vector'
-import type { Context, GameObject, RadialHitBox, Vector } from '../Types'
+import { Vector, ZERO } from '../Maths/Vector'
+import type { Context, GameObject, RadialHitBox } from '../Types'
 import { Explosion } from './Explosion'
 
 export class Missile implements GameObject {
@@ -55,6 +55,6 @@ export class Missile implements GameObject {
 
   destroy({ gameObjects }: Context) {
     console.log('destroy: Missile')
-    gameObjects.push(new Explosion(this.pos, ZERO()))
+    gameObjects.push(new Explosion(this.pos, ZERO))
   }
 }

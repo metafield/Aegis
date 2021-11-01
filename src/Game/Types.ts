@@ -1,6 +1,5 @@
-import type Vector2d from 'vector2d'
+import type { Vector } from './Maths/Vector'
 
-export type Vector = Vector2d.Vector | Vector2d.AbstractVector
 export interface Context {
   ctx: CanvasRenderingContext2D
   gameObjects: GameObject[]

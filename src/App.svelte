@@ -4,17 +4,17 @@
   import {
     directionToTarget,
     quickDestroy,
-    randomLeftRight,
+    randomRangeLeftRight,
   } from './Game/Maths/Utils'
-  import { vector } from './Game/Maths/Vector'
+  import { v } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
   import { height, width } from './store/game'
   import { Comet } from './Game/Prefabs/Comet'
 
   let canvas: HTMLCanvasElement
-  const basePos = vector($width / 2 - 90 / 2, $height - 45)
-  const firePoint = vector($width / 2, $height - 45)
+  const basePos = v($width / 2 - 90 / 2, $height - 45)
+  const firePoint = v($width / 2, $height - 45)
   const gameObjects: GameObject[] = []
   const vfxObjects: GameObject[] = []
 
@@ -52,9 +52,9 @@
       enemySpawnTimer -= deltaTime
       if (enemySpawnTimer <= 0) {
         gameObjects.push(
-          new Comet(vector(400, 0), randomLeftRight().mulS(Math.random())),
-          new Comet(vector(200, 0), randomLeftRight().mulS(Math.random())),
-          new Comet(vector(600, 0), randomLeftRight().mulS(Math.random()))
+          new Comet(v(400, 0), randomRangeLeftRight()),
+          new Comet(v(200, 0), randomRangeLeftRight()),
+          new Comet(v(600, 0), randomRangeLeftRight())
         )
 
         enemySpawnTimer = enemySpawnCD
@@ -82,7 +82,7 @@
   })
 
   function handleMousedown(event) {
-    let mouse = vector(event.offsetX, event.offsetY)
+    let mouse = v(event.offsetX, event.offsetY)
     let directionFromBase = directionToTarget(firePoint, mouse)
 
     gameObjects.push(

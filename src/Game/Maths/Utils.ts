@@ -1,7 +1,5 @@
-import type { Context, GameObject, Vector } from '../Types'
-import { LEFT, RIGHT, vector } from './Vector'
-
-export const GRAVITY = 9.8
+import type { Context, GameObject } from '../Types'
+import { LEFT, RIGHT, v, Vector } from './Vector'
 
 const { floor, random } = Math
 
@@ -13,12 +11,16 @@ export function randomDirection() {
   return floor(random() * 2 - 1)
 }
 
-export function randomLeftRight() {
-  return randomRange(1, 2) % 2 == 0 ? LEFT() : RIGHT()
+export function randomLeftOrRight() {
+  return randomRange(1, 2) % 2 == 0 ? LEFT : RIGHT
+}
+
+export function randomRangeLeftRight() {
+  return randomLeftOrRight().mulS2(Math.random())
 }
 
 export function directionToTarget(pos: Vector, target: Vector) {
-  let directionNonNormalised = vector(target.x - pos.x, target.y - pos.y)
+  let directionNonNormalised = v(target.x - pos.x, target.y - pos.y)
   return directionNonNormalised.normalise()
 }
 

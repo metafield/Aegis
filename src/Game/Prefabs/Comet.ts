@@ -1,12 +1,12 @@
-import { GRAVITY, randomRange } from '../Maths/Utils'
-import { DOWN, LEFT, RIGHT, ZERO } from '../Maths/Vector'
+import { GRAVITY } from '../../store/game'
+import { randomRange } from '../Maths/Utils'
+import { DOWN, LEFT, RIGHT, Vector, ZERO } from '../Maths/Vector'
 
 import type {
   Context,
   GameObject,
   RadialHitBox,
   Triggerable,
-  Vector,
 } from '../Types'
 
 import { Explosion } from './Explosion'
@@ -24,8 +24,8 @@ export class Comet implements GameObject, Triggerable {
   private invuln = this.invulnTime
   private trailInterval = 4 * this.speed
   private trail = this.trailInterval
-  private gravity = DOWN().mulS(GRAVITY * 10)
-  private velocity = ZERO()
+  private velocity = ZERO.clone()
+  private gravity = ZERO.clone()
 
   constructor(
     public pos: Vector,
@@ -38,8 +38,6 @@ export class Comet implements GameObject, Triggerable {
     if (this.radius > this.divideRadius) {
       this.colour = '#ddd'
     }
-
-    this.velocity.add(this.direction).mulS(this.speed).add(this.gravity)
   }
 
   trigger(evoker: GameObject) {
@@ -54,12 +52,7 @@ export class Comet implements GameObject, Triggerable {
 
   checkCollisions: (context: Context) => void
 
-  draw({ ctx, deltaTime }: Context) {
-    let rev = this.direction
-      .clone()
-      .reverse()
-      .mulS(deltaTime / this.speed)
-
+  draw({ ctx }: Context) {
     ctx.fillStyle = this.colour
     ctx.beginPath()
     ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true)
@@ -98,6 +91,10 @@ export class Comet implements GameObject, Triggerable {
 
   update({ deltaTime, vfxObjects }: Context) {
     this.invuln -= deltaTime
+
+    this.gravity = DOWN.mulS2(GRAVITY * deltaTime)
+    this.velocity = this.direction.mulS2(deltaTime).add(this.gravity)
+
     this.pos.add(this.velocity.clone().mulS(deltaTime / 1000))
     this.hitBox.radius = this.radius
     this.hitBox.pos = this.pos.clone()
@@ -126,17 +123,17 @@ export class Comet implements GameObject, Triggerable {
   destroy({ gameObjects }) {
     // TODO: height here
     if (this.pos.y >= 800) {
-      gameObjects.push(new Explosion(this.pos, ZERO(), 60))
+      gameObjects.push(new Explosion(this.pos, ZERO, 60))
       return
     }
 
     if (this.radius > this.divideRadius) {
       gameObjects.push(
-        new Comet(this.pos.clone(), LEFT(), this.radius / 2),
-        new Comet(this.pos.clone(), RIGHT(), this.radius / 2)
+        new Comet(this.pos.clone(), LEFT, this.radius / 2),
+        new Comet(this.pos.clone(), RIGHT, this.radius / 2)
       )
     } else {
-      gameObjects.push(new Explosion(this.pos, ZERO(), 60))
+      gameObjects.push(new Explosion(this.pos, ZERO, 60))
     }
     console.log('destroy: comet exploded')
   }
