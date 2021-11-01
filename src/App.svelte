@@ -44,7 +44,7 @@
       context.deltaTime = deltaTime
 
       // TODO: (temp) add base
-      drawBase(ctx, basePos)
+      drawBase(context, basePos)
 
       // Gameplay Director
 
