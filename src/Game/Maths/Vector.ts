@@ -6,7 +6,7 @@ export class Vector extends Vector2d.Vector {
 
   static create = (x: number, y: number) => new Vector(x, y)
 
-  // Strips the abstract vector type
+  // Strips the abstract vector type from super clone
   clone() {
     return new Vector(this.x, this.y)
   }
