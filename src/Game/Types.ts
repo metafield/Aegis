@@ -1,3 +1,4 @@
+import type { GameObject } from './Core/GameObject'
 import type { Vector } from './Maths/Vector'
 
 export interface Context {
@@ -6,7 +7,7 @@ export interface Context {
   vfxObjects: GameObject[]
   deltaTime: number
 }
-export interface GameObject {
+export interface IGameObject {
   dead: Boolean
   pos: Vector
   direction: Vector

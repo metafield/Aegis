@@ -1,9 +1,10 @@
+import { GameObject } from '../Core/GameObject'
 import { randomRange } from '../Maths/Utils'
 import type { Vector } from '../Maths/Vector'
 
-import type { Context, GameObject } from '../Types'
+import type { Context } from '../Types'
 
-export class Fader implements GameObject {
+export class Fader extends GameObject {
   dead = false
 
   private startRadius: number
@@ -15,6 +16,7 @@ export class Fader implements GameObject {
     public colour: string,
     public rate: number
   ) {
+    super()
     this.startRadius = radius
   }
 
@@ -38,7 +40,5 @@ export class Fader implements GameObject {
     ctx.fill()
   }
 
-  destroy({ gameObjects }) {
-    console.log('destroy: trail')
-  }
+  destroy() {}
 }

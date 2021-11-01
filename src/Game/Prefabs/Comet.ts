@@ -1,18 +1,14 @@
 import { GRAVITY } from '../../store/game'
+import { GameObject } from '../Core/GameObject'
 import { randomRange } from '../Maths/Utils'
 import { DOWN, LEFT, RIGHT, Vector, ZERO } from '../Maths/Vector'
 
-import type {
-  Context,
-  GameObject,
-  RadialHitBox,
-  Triggerable,
-} from '../Types'
+import type { Context, RadialHitBox, Triggerable } from '../Types'
 
 import { Explosion } from './Explosion'
 import { Fader } from './Fader'
 
-export class Comet implements GameObject, Triggerable {
+export class Comet extends GameObject implements Triggerable {
   dead = false
   isTriggerable = true
   hitBox = {} as RadialHitBox
@@ -32,6 +28,7 @@ export class Comet implements GameObject, Triggerable {
     public direction: Vector,
     public radius: number = randomRange(5, 35)
   ) {
+    super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
 
@@ -135,6 +132,5 @@ export class Comet implements GameObject, Triggerable {
     } else {
       gameObjects.push(new Explosion(this.pos, ZERO, 60))
     }
-    console.log('destroy: comet exploded')
   }
 }

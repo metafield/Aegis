@@ -1,8 +1,9 @@
+import { GameObject } from '../Core/GameObject'
 import { Vector, ZERO } from '../Maths/Vector'
-import type { Context, GameObject, RadialHitBox } from '../Types'
+import type { Context, RadialHitBox } from '../Types'
 import { Explosion } from './Explosion'
 
-export class Missile implements GameObject {
+export class Missile extends GameObject {
   public dead = false
 
   private speed = 0.7
@@ -12,7 +13,9 @@ export class Missile implements GameObject {
     public pos: Vector,
     public direction: Vector,
     public target: Vector
-  ) {}
+  ) {
+    super()
+  }
   hitBox?: RadialHitBox
   isTriggerable?: boolean
 
@@ -47,14 +50,12 @@ export class Missile implements GameObject {
     // then we reached the target and now we need to go boom
     const change = lastMin - this.minTargetDist
 
-    console.log()
     if (change < Math.abs(0.1)) {
       this.dead = true
     }
   }
 
   destroy({ gameObjects }: Context) {
-    console.log('destroy: Missile')
     gameObjects.push(new Explosion(this.pos, ZERO))
   }
 }

@@ -1,8 +1,9 @@
+import { GameObject } from '../Core/GameObject'
 import { randomColour } from '../Maths/Utils'
 import type { Vector } from '../Maths/Vector'
-import type { Context, GameObject, RadialHitBox } from '../Types'
+import type { Context, RadialHitBox } from '../Types'
 
-export class Explosion implements GameObject {
+export class Explosion extends GameObject {
   dead = false
 
   public hitBox = {} as RadialHitBox
@@ -15,6 +16,7 @@ export class Explosion implements GameObject {
     public direction: Vector,
     public maxRadius: number = 30
   ) {
+    super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
   }
@@ -77,7 +79,5 @@ export class Explosion implements GameObject {
     }
   }
 
-  destroy() {
-    console.log('destroy: Explosion')
-  }
+  destroy() {}
 }
