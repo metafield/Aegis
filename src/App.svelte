@@ -72,7 +72,7 @@
         gameObjects[i].update(context)
         gameObjects[i].draw(context)
       }
-      
+
       // Remove dead objects and invoke destroy
       quickDestroy(gameObjects, context)
 
@@ -87,7 +87,11 @@
     let directionFromBase = directionToTarget(firePoint, mouse)
 
     gameObjects.push(
-      new Missile(firePoint.clone(), directionFromBase, mouse)
+      new Missile(
+        firePoint.clone(),
+        directionFromBase.clone(),
+        mouse.clone()
+      )
     )
 
     // target.set(new Vector(event.offsetX, event.offsetY));
