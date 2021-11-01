@@ -1,6 +1,7 @@
 import { randomRange } from '../Maths/Utils'
+import type { Vector } from '../Maths/Vector'
 
-import type { Context, GameObject, Vector } from '../Types'
+import type { Context, GameObject } from '../Types'
 
 export class Fader implements GameObject {
   dead = false

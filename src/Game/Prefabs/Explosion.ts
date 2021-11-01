@@ -1,5 +1,6 @@
 import { randomColour } from '../Maths/Utils'
-import type { Context, GameObject, RadialHitBox, Vector } from '../Types'
+import type { Vector } from '../Maths/Vector'
+import type { Context, GameObject, RadialHitBox } from '../Types'
 
 export class Explosion implements GameObject {
   dead = false
