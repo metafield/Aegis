@@ -1,7 +1,7 @@
 import { GRAVITY } from '../../store/game'
 import { GameObject } from '../Core/GameObject'
 import { randomRange } from '../Maths/Utils'
-import { DOWN, LEFT, RIGHT, Vector, ZERO } from '../Maths/Vector'
+import { DOWN, LEFT, ONE, RIGHT, v, Vector, ZERO } from '../Maths/Vector'
 
 import type { Context, RadialHitBox, Triggerable } from '../Types'
 
@@ -13,15 +13,16 @@ export class Comet extends GameObject implements Triggerable {
   isTriggerable = true
   hitBox = {} as RadialHitBox
 
-  private speed = 44
+  private speed = 20
   private colour = '#fff'
   private divideRadius = 24
   private invulnTime = 400
   private invuln = this.invulnTime
-  private trailInterval = 4 * this.speed
+  private trailInterval = 400 / this.speed
   private trail = this.trailInterval
   private velocity = ZERO.clone()
-  private gravity = ZERO.clone()
+  private gravity = DOWN.mulS2(GRAVITY)
+  private drag: number
 
   constructor(
     public pos: Vector,
@@ -31,6 +32,7 @@ export class Comet extends GameObject implements Triggerable {
     super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
+    this.drag = this.radius
 
     if (this.radius > this.divideRadius) {
       this.colour = '#ddd'
@@ -78,10 +80,24 @@ export class Comet extends GameObject implements Triggerable {
   update({ deltaTime, vfxObjects }: Context) {
     this.invuln -= deltaTime
 
-    this.gravity = DOWN.mulS2(GRAVITY * deltaTime)
-    this.velocity = this.direction.mulS2(deltaTime).add(this.gravity)
+    // calc velocity
+    this.velocity.setX(0)
+    this.velocity.setY(0)
+    this.velocity
+      .add(this.direction.mulS2(deltaTime))
+      .add(this.gravity.mulS2(deltaTime))
 
-    this.pos.add(this.velocity.mulS2(0.01))
+    this.velocity.mulS(deltaTime).mulS(0.002)
+
+    // update forces
+    this.gravity.y =
+      this.gravity.y < 6
+        ? 6
+        : this.gravity.y - this.drag * (deltaTime / 1000)
+    console.log(this.direction.length())
+
+    // update hit boxes
+    this.pos.add(this.velocity)
     this.hitBox.radius = this.radius
     this.hitBox.pos = this.pos.clone()
 

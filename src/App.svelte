@@ -14,33 +14,58 @@
   import type { GameObject } from './Game/Core/GameObject'
 
   let canvas: HTMLCanvasElement
+  const buffer = document.createElement('canvas')
+  buffer.width = $width
+  buffer.height = $height
+
   const basePos = v($width / 2 - 90 / 2, $height - 45)
   const firePoint = v($width / 2, $height - 45)
   const gameObjects: GameObject[] = []
   const vfxObjects: GameObject[] = []
+
   onMount(async () => {
-    const ctx = canvas.getContext('2d')
+    const ctx = buffer.getContext('2d')
+    const visibleCtx = canvas.getContext('2d')
     const context = {
       gameObjects,
       vfxObjects,
       ctx,
     } as Context
 
-    let prevTime = 0
-    let deltaTime = 0
-
     let enemySpawnCD = 800
     let enemySpawnTimer = enemySpawnCD
 
-    function gameLoop(timeMs: number) {
-      // clear
-      ctx.clearRect(0, 0, $width, $height)
+    // FPS and timings
+    let prevTime = 0
+    let now: number
+    let deltaTime = 0
+    let frameTime = 0
+    const targetFPS = 60
+    const renderInterval = 1000 / targetFPS
 
+    gameObjects.push(new Comet(v(400, -50), randomRangeLeftRight()))
+
+    function gameLoop(timeMs: number) {
+      requestAnimationFrame(gameLoop)
+      now = Date.now()
       // Time - calculate delta
       deltaTime = timeMs - prevTime
+      deltaTime = now - prevTime
+
+      if (deltaTime > renderInterval) {
+        draw()
+        prevTime = now - (deltaTime % renderInterval)
+      }
+    }
+
+    function draw() {
+      frameTime = new Date().getTime()
+      // clear
+      visibleCtx.clearRect(0, 0, $width, $height)
+      ctx.clearRect(0, 0, $width, $height)
+
       // fix for tab switching:
       if (deltaTime > 50) deltaTime = 50
-      prevTime = timeMs
       context.deltaTime = deltaTime
 
       // TODO: (temp) add base
@@ -50,15 +75,15 @@
 
       // spawn things if they are able
       enemySpawnTimer -= deltaTime
-      if (enemySpawnTimer <= 0) {
-        gameObjects.push(
-          new Comet(v(400, -50), randomRangeLeftRight()),
-          new Comet(v(200, -50), randomRangeLeftRight()),
-          new Comet(v(600, -50), randomRangeLeftRight())
-        )
+      // if (enemySpawnTimer <= 0) {
+      //   gameObjects.push(
+      //     new Comet(v(400, -50), randomRangeLeftRight()),
+      //     new Comet(v(200, -50), randomRangeLeftRight()),
+      //     new Comet(v(600, -50), randomRangeLeftRight())
+      //   )
 
-        enemySpawnTimer = enemySpawnCD
-      }
+      //   enemySpawnTimer = enemySpawnCD
+      // }
 
       // Draw vfx
       for (let i = 0; i < vfxObjects.length; i++) {
@@ -72,12 +97,15 @@
         gameObjects[i].draw(context)
       }
 
+      // render to the screen with double buffering
+      visibleCtx.drawImage(buffer, 0, 0)
+
       // Remove dead objects and invoke destroy
       quickDestroy(gameObjects, context)
 
-      requestAnimationFrame(gameLoop)
+      // log current frame time
+      // console.log(new Date().getTime() - frameTime)
     }
-
     gameLoop(0)
   })
 

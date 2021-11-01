@@ -17,7 +17,6 @@ export function drawBase({ ctx, deltaTime }: Context, pos: Vector) {
     deltaMax = Math.max(deltaMax, deltaTime)
     deltaMin = Math.min(deltaMin, deltaTime)
   }
-
   if (t2 - t1 >= 1000) {
     t1 = t2
     frames.push(frameCount)

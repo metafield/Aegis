@@ -1,4 +1,5 @@
-import type { Context, GameObject } from '../Types'
+import type { GameObject } from '../Core/GameObject'
+import type { Context } from '../Types'
 import { LEFT, RIGHT, v, Vector } from './Vector'
 
 const { floor, random } = Math
@@ -16,7 +17,7 @@ export function randomLeftOrRight() {
 }
 
 export function randomRangeLeftRight() {
-  return randomLeftOrRight().mulS2(Math.random())
+  return randomLeftOrRight().mulS2(Math.random()).normalise()
 }
 
 export function directionToTarget(pos: Vector, target: Vector) {
