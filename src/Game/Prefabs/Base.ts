@@ -7,10 +7,16 @@ let frames = [0, 0, 0]
 let text = ''
 let deltaMax = -Infinity
 let deltaMin = Infinity
+// there is loading lag at the start we need to wait to get consistency
+let enableMinMax = false
+setTimeout(() => (enableMinMax = true), 3000)
+
 export function drawBase({ ctx, deltaTime }: Context, pos: Vector) {
   let t2 = new Date().getTime()
-  deltaMax = Math.max(deltaMax, deltaTime)
-  deltaMin = Math.min(deltaMin, deltaTime)
+  if (enableMinMax) {
+    deltaMax = Math.max(deltaMax, deltaTime)
+    deltaMin = Math.min(deltaMin, deltaTime)
+  }
 
   if (t2 - t1 >= 1000) {
     t1 = t2

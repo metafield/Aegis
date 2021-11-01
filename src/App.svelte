@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { Context, GameObject } from './Game/Types'
+  import type { Context } from './Game/Types'
   import {
     directionToTarget,
     quickDestroy,
@@ -11,13 +11,13 @@
   import { Missile } from './Game/Prefabs/Missile'
   import { height, width } from './store/game'
   import { Comet } from './Game/Prefabs/Comet'
+  import type { GameObject } from './Game/Core/GameObject'
 
   let canvas: HTMLCanvasElement
   const basePos = v($width / 2 - 90 / 2, $height - 45)
   const firePoint = v($width / 2, $height - 45)
   const gameObjects: GameObject[] = []
   const vfxObjects: GameObject[] = []
-
   onMount(async () => {
     const ctx = canvas.getContext('2d')
     const context = {
@@ -52,9 +52,9 @@
       enemySpawnTimer -= deltaTime
       if (enemySpawnTimer <= 0) {
         gameObjects.push(
-          new Comet(v(400, 0), randomRangeLeftRight()),
-          new Comet(v(200, 0), randomRangeLeftRight()),
-          new Comet(v(600, 0), randomRangeLeftRight())
+          new Comet(v(400, -50), randomRangeLeftRight()),
+          new Comet(v(200, -50), randomRangeLeftRight()),
+          new Comet(v(600, -50), randomRangeLeftRight())
         )
 
         enemySpawnTimer = enemySpawnCD

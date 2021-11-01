@@ -68,17 +68,6 @@ export class Comet extends GameObject implements Triggerable {
       true
     )
     ctx.stroke()
-
-    // cover
-    let pos = this.pos.clone()
-
-    // TODO: performance move this up
-    let retro = pos.add(this.velocity.clone().reverse().divS(this.speed))
-
-    ctx.fillStyle = `#fff`
-    ctx.beginPath()
-    ctx.arc(retro.x, retro.y, this.radius, 0, Math.PI * 2, true)
-    ctx.fill()
   }
 
   kill(killer: GameObject) {
@@ -92,7 +81,7 @@ export class Comet extends GameObject implements Triggerable {
     this.gravity = DOWN.mulS2(GRAVITY * deltaTime)
     this.velocity = this.direction.mulS2(deltaTime).add(this.gravity)
 
-    this.pos.add(this.velocity.clone().mulS(deltaTime / 1000))
+    this.pos.add(this.velocity.mulS2(0.01))
     this.hitBox.radius = this.radius
     this.hitBox.pos = this.pos.clone()
 
