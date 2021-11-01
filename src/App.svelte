@@ -93,9 +93,6 @@
         mouse.clone()
       )
     )
-
-    // target.set(new Vector(event.offsetX, event.offsetY));
-    // add target to the canvas and the outliner
   }
 </script>
 
