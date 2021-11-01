@@ -12,7 +12,7 @@ export class Missile implements GameObject {
   constructor(
     public pos: Vector | AbstractVector,
     public direction: Vector | AbstractVector,
-    public target: Vector
+    public target: Vector | AbstractVector
   ) {}
   hitBox?: RadialHitBox
   isTriggerable?: boolean

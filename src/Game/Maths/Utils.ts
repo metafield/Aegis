@@ -1,4 +1,4 @@
-import { Vector } from 'vector2d'
+import { AbstractVector, Vector } from 'vector2d'
 import type { Context, GameObject } from '../Types'
 import { LEFT, RIGHT } from './Vector'
 
@@ -18,8 +18,10 @@ export function randomLeftRight() {
   return randomRange(1, 2) % 2 == 0 ? LEFT.clone() : RIGHT.clone()
 }
 
-
-export function directionToTarget(pos: Vector, target: Vector) {
+export function directionToTarget(
+  pos: Vector | AbstractVector,
+  target: Vector | AbstractVector
+) {
   let directionNonNormalised = new Vector(
     target.x - pos.x,
     target.y - pos.y
@@ -53,7 +55,6 @@ export function quickDestroy(
 }
 
 export function randomHex() {
-
   const { floor, random } = Math
 
   return floor(random() * 255)
