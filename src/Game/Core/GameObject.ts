@@ -4,7 +4,7 @@ import type { Context, RadialHitBox } from '../Types'
 export abstract class GameObject {
   dead: Boolean
   pos: Vector
-  direction: Vector
+  velocity: Vector
 
   hitBox?: RadialHitBox
   isTriggerable?: boolean
