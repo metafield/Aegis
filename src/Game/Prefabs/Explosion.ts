@@ -9,7 +9,7 @@ export class Explosion extends GameObject {
   public hitBox = {} as RadialHitBox
   private radius = 0
   private maxSize = 30
-  private colour = randomColour()
+  private colour = '#FFF'
 
   constructor(
     public pos: Vector,
@@ -22,15 +22,9 @@ export class Explosion extends GameObject {
   }
 
   draw({ ctx }: Context) {
+    // uses hit box to help with debugging
     ctx.strokeStyle = this.colour
     ctx.lineWidth = 4
-    ctx.beginPath()
-    ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true)
-    ctx.stroke()
-
-    // hit box
-    ctx.strokeStyle = '#f00'
-    ctx.lineWidth = 1
     ctx.beginPath()
     ctx.arc(
       this.hitBox.pos.x,

@@ -32,7 +32,7 @@
       ctx,
     } as Context
 
-    let enemySpawnCD = 800
+    let enemySpawnCD = 3000
     let enemySpawnTimer = enemySpawnCD
 
     // FPS and timings
@@ -77,9 +77,9 @@
       enemySpawnTimer -= deltaTime
       if (enemySpawnTimer <= 0) {
         gameObjects.push(
-          new Comet(v(400, -50), randomRangeLeftRight()),
-          new Comet(v(200, -50), randomRangeLeftRight()),
-          new Comet(v(600, -50), randomRangeLeftRight())
+          new Comet(v(400, -50), randomRangeLeftRight().mulS(10)),
+          new Comet(v(200, -50), randomRangeLeftRight().mulS(10)),
+          new Comet(v(600, -50), randomRangeLeftRight().mulS(10))
         )
 
         enemySpawnTimer = enemySpawnCD

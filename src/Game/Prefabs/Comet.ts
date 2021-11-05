@@ -1,17 +1,7 @@
-import { debug } from 'svelte/internal'
 import { DEBUG, GRAVITY, HEIGHT } from '../Core/game'
 import { GameObject } from '../Core/GameObject'
-import { clamp, randomRange } from '../Maths/Utils'
-import {
-  DOWN,
-  LEFT,
-  ONE,
-  RIGHT,
-  UP,
-  v,
-  Vector,
-  ZERO,
-} from '../Maths/Vector'
+import { randomRange } from '../Maths/Utils'
+import { DOWN, LEFT, RIGHT, UP, Vector, ZERO } from '../Maths/Vector'
 
 import type { Context, RadialHitBox, Triggerable } from '../Types'
 
@@ -31,10 +21,11 @@ export class Comet extends GameObject implements Triggerable {
   private trail = this.trailInterval
   private gravity = GRAVITY
   private drag = GRAVITY
+  public velocity = DOWN.mulS2(GRAVITY)
 
   constructor(
     public pos: Vector,
-    public velocity: Vector = DOWN.mulS2(GRAVITY),
+    public horizontalForce: Vector,
     public radius: number = randomRange(5, 35)
   ) {
     super()
@@ -111,9 +102,13 @@ export class Comet extends GameObject implements Triggerable {
     // drag = relation of this Y to the height of the screen
     // 10 * (this.pos.y / HEIGHT + offset) - the max value should be off the screen for now
     this.drag = 10 * (this.pos.y / (HEIGHT * 1.5))
+    // bleed off the horizontal force
+    this.horizontalForce.mulS(0.991 + randomRange(0.004, 0.006))
+
     this.velocity
       .add(DOWN.mulS2(this.gravity * deltaTime))
       .add(UP.mulS2(this.drag * deltaTime))
+      .add(this.horizontalForce.mulS2(deltaTime))
 
     // update hit boxes
     this.pos.add(this.velocity.mulS2(0.01))
@@ -147,17 +142,21 @@ export class Comet extends GameObject implements Triggerable {
 
   destroy({ gameObjects }) {
     if (this.pos.y >= HEIGHT) {
-      gameObjects.push(new Explosion(this.pos, ZERO, 60))
+      gameObjects.push(new Explosion(this.pos, ZERO, this.radius * 1.5))
       return
     }
 
     if (this.radius > this.divideRadius) {
       gameObjects.push(
-        new Comet(this.pos.clone(), LEFT.clone(), this.radius / 2),
-        new Comet(this.pos.clone(), RIGHT.clone(), this.radius / 2)
+        new Comet(
+          this.pos.clone(),
+          this.horizontalForce.clone().reverse(),
+          this.radius / 2
+        ),
+        new Comet(this.pos.clone(), this.horizontalForce, this.radius / 2)
       )
     } else {
-      gameObjects.push(new Explosion(this.pos, ZERO, 60))
+      gameObjects.push(new Explosion(this.pos, ZERO, this.radius * 1.5))
     }
   }
 }
