@@ -9,7 +9,7 @@
   import { v, ZERO } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
-  import { HEIGHT, WIDTH } from './store/game'
+  import { HEIGHT, WIDTH } from './Game/Core/game'
   import { Comet } from './Game/Prefabs/Comet'
   import type { GameObject } from './Game/Core/GameObject'
 

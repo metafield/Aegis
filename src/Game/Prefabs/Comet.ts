@@ -1,4 +1,5 @@
-import { GRAVITY, HEIGHT } from '../../store/game'
+import { debug } from 'svelte/internal'
+import { DEBUG, GRAVITY, HEIGHT } from '../Core/game'
 import { GameObject } from '../Core/GameObject'
 import { clamp, randomRange } from '../Maths/Utils'
 import {
@@ -80,14 +81,17 @@ export class Comet extends GameObject implements Triggerable {
     )
     ctx.stroke()
 
-    ctx.strokeStyle = `hsla(${90 - 90 * dragPCofMax}, 100%, 50%, 1)`
-    ctx.lineWidth = 2
-    ctx.font = '16px serif'
-    ctx.strokeText(
-      dragPCofMax.toFixed(1),
-      this.pos.x + this.radius + 16,
-      this.pos.y
-    )
+    // debug: display forces
+    if (DEBUG) {
+      ctx.strokeStyle = `hsla(${90 - 90 * dragPCofMax}, 100%, 50%, 1)`
+      ctx.lineWidth = 2
+      ctx.font = '16px serif'
+      ctx.strokeText(
+        dragPCofMax.toFixed(1),
+        this.pos.x + this.radius + 16,
+        this.pos.y
+      )
+    }
   }
 
   kill(killer: GameObject) {
