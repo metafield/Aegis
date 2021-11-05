@@ -4,6 +4,10 @@ import { LEFT, RIGHT, v, Vector } from './Vector'
 
 const { floor, random } = Math
 
+export function clamp(num: number, min: number, max: number): number {
+  return Math.min(Math.max(num, min), max)
+}
+
 export function randomRange(min: number, max: number): number {
   return floor(random() * max) + min
 }
@@ -17,7 +21,7 @@ export function randomLeftOrRight() {
 }
 
 export function randomRangeLeftRight() {
-  return randomLeftOrRight().mulS2(Math.random()).normalise()
+  return randomLeftOrRight().mulS2(random()).normalise()
 }
 
 export function directionToTarget(pos: Vector, target: Vector) {
@@ -51,8 +55,6 @@ export function quickDestroy(
 }
 
 export function randomHex() {
-  const { floor, random } = Math
-
   return floor(random() * 255)
     .toString(16)
     .padStart(2, '0')

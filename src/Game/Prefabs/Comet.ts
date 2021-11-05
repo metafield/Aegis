@@ -1,7 +1,16 @@
-import { GRAVITY } from '../../store/game'
+import { GRAVITY, HEIGHT } from '../../store/game'
 import { GameObject } from '../Core/GameObject'
-import { randomRange } from '../Maths/Utils'
-import { DOWN, LEFT, ONE, RIGHT, v, Vector, ZERO } from '../Maths/Vector'
+import { clamp, randomRange } from '../Maths/Utils'
+import {
+  DOWN,
+  LEFT,
+  ONE,
+  RIGHT,
+  UP,
+  v,
+  Vector,
+  ZERO,
+} from '../Maths/Vector'
 
 import type { Context, RadialHitBox, Triggerable } from '../Types'
 
@@ -13,26 +22,23 @@ export class Comet extends GameObject implements Triggerable {
   isTriggerable = true
   hitBox = {} as RadialHitBox
 
-  private speed = 20
   private colour = '#fff'
   private divideRadius = 24
   private invulnTime = 400
   private invuln = this.invulnTime
-  private trailInterval = 400 / this.speed
+  private trailInterval = 15 * (this.radius / 2)
   private trail = this.trailInterval
-  private velocity = ZERO.clone()
-  private gravity = DOWN.mulS2(GRAVITY)
-  private drag: number
+  private gravity = GRAVITY
+  private drag = GRAVITY
 
   constructor(
     public pos: Vector,
-    public direction: Vector,
+    public velocity: Vector = DOWN.mulS2(GRAVITY),
     public radius: number = randomRange(5, 35)
   ) {
     super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
-    this.drag = this.radius
 
     if (this.radius > this.divideRadius) {
       this.colour = '#ddd'
@@ -52,14 +58,17 @@ export class Comet extends GameObject implements Triggerable {
   checkCollisions: (context: Context) => void
 
   draw({ ctx }: Context) {
+    // physics info: get the drag to colour it
+    let dragPCofMax = this.drag / (this.gravity - 2)
+
     ctx.fillStyle = this.colour
     ctx.beginPath()
     ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true)
     ctx.fill()
 
-    // hit box
-    ctx.strokeStyle = '#000'
-    ctx.lineWidth = 1
+    // outline (uses hit box to spot bugs)
+    ctx.strokeStyle = `hsla(${50 - 25 * dragPCofMax}, 100%, 50%, 1)`
+    ctx.lineWidth = 3 * dragPCofMax
     ctx.beginPath()
     ctx.arc(
       this.hitBox.pos.x,
@@ -70,6 +79,15 @@ export class Comet extends GameObject implements Triggerable {
       true
     )
     ctx.stroke()
+
+    ctx.strokeStyle = `hsla(${90 - 90 * dragPCofMax}, 100%, 50%, 1)`
+    ctx.lineWidth = 2
+    ctx.font = '16px serif'
+    ctx.strokeText(
+      dragPCofMax.toFixed(1),
+      this.pos.x + this.radius + 16,
+      this.pos.y
+    )
   }
 
   kill(killer: GameObject) {
@@ -81,36 +99,38 @@ export class Comet extends GameObject implements Triggerable {
     this.invuln -= deltaTime
 
     // calc velocity
-    this.velocity.setX(0)
-    this.velocity.setY(0)
+    this.velocity.zero()
+
+    // drag: max possible is 10 to match gravity. 2 factors: Atmospheric and Surface Area
+    // The atmospheric drag is based on how far down in Y (how close to Earth) the comet is.
+    // The SA drag is derived from the radius of the comet:
+    // drag = relation of this Y to the height of the screen
+    // 10 * (this.pos.y / HEIGHT + offset) - the max value should be off the screen for now
+    this.drag = 10 * (this.pos.y / (HEIGHT * 1.5))
     this.velocity
-      .add(this.direction.mulS2(deltaTime))
-      .add(this.gravity.mulS2(deltaTime))
-
-    this.velocity.mulS(deltaTime).mulS(0.002)
-
-    // update forces
-    this.gravity.y =
-      this.gravity.y < 6
-        ? 6
-        : this.gravity.y - this.drag * (deltaTime / 1000)
-    console.log(this.direction.length())
+      .add(DOWN.mulS2(this.gravity * deltaTime))
+      .add(UP.mulS2(this.drag * deltaTime))
 
     // update hit boxes
-    this.pos.add(this.velocity)
+    this.pos.add(this.velocity.mulS2(0.01))
     this.hitBox.radius = this.radius
     this.hitBox.pos = this.pos.clone()
 
     // drop trails
     this.trail -= deltaTime
+    // update interval = new time - current elapsed
+
+    this.trail = Math.min(this.trail, this.trailInterval)
+
     if (this.trail < 0) {
       vfxObjects.unshift(
         new Fader(
           this.pos.clone(),
-          this.direction.clone(),
+          this.velocity.clone(),
           this.radius,
-          '#ffbb22',
-          100
+          `hsla(${50 - 25 * (this.pos.y / HEIGHT)}, 100%, 50%, 1)`,
+          8 + (this.pos.y / HEIGHT) * 2,
+          2000 - (this.pos.y / HEIGHT) * 1200
         )
       )
 
@@ -118,21 +138,19 @@ export class Comet extends GameObject implements Triggerable {
     }
 
     // death condition
-    // TODO: need height here
-    if (this.pos.y >= 800) this.kill(this)
+    if (this.pos.y >= HEIGHT) this.kill(this)
   }
 
   destroy({ gameObjects }) {
-    // TODO: height here
-    if (this.pos.y >= 800) {
+    if (this.pos.y >= HEIGHT) {
       gameObjects.push(new Explosion(this.pos, ZERO, 60))
       return
     }
 
     if (this.radius > this.divideRadius) {
       gameObjects.push(
-        new Comet(this.pos.clone(), LEFT, this.radius / 2),
-        new Comet(this.pos.clone(), RIGHT, this.radius / 2)
+        new Comet(this.pos.clone(), LEFT.clone(), this.radius / 2),
+        new Comet(this.pos.clone(), RIGHT.clone(), this.radius / 2)
       )
     } else {
       gameObjects.push(new Explosion(this.pos, ZERO, 60))

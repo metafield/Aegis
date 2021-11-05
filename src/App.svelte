@@ -6,20 +6,20 @@
     quickDestroy,
     randomRangeLeftRight,
   } from './Game/Maths/Utils'
-  import { v } from './Game/Maths/Vector'
+  import { v, ZERO } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
-  import { height, width } from './store/game'
+  import { HEIGHT, WIDTH } from './store/game'
   import { Comet } from './Game/Prefabs/Comet'
   import type { GameObject } from './Game/Core/GameObject'
 
   let canvas: HTMLCanvasElement
   const buffer = document.createElement('canvas')
-  buffer.width = $width
-  buffer.height = $height
+  buffer.width = WIDTH
+  buffer.height = HEIGHT
 
-  const basePos = v($width / 2 - 90 / 2, $height - 45)
-  const firePoint = v($width / 2, $height - 45)
+  const basePos = v(WIDTH / 2 - 90 / 2, HEIGHT - 45)
+  const firePoint = v(WIDTH / 2, HEIGHT - 45)
   const gameObjects: GameObject[] = []
   const vfxObjects: GameObject[] = []
 
@@ -43,7 +43,7 @@
     const targetFPS = 60
     const renderInterval = 1000 / targetFPS
 
-    gameObjects.push(new Comet(v(400, -50), randomRangeLeftRight()))
+    gameObjects.push(new Comet(v(400, -50), ZERO.clone()))
 
     function gameLoop(timeMs: number) {
       requestAnimationFrame(gameLoop)
@@ -61,8 +61,8 @@
     function draw() {
       frameTime = new Date().getTime()
       // clear
-      visibleCtx.clearRect(0, 0, $width, $height)
-      ctx.clearRect(0, 0, $width, $height)
+      visibleCtx.clearRect(0, 0, WIDTH, HEIGHT)
+      ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
       // fix for tab switching:
       if (deltaTime > 50) deltaTime = 50
@@ -75,15 +75,15 @@
 
       // spawn things if they are able
       enemySpawnTimer -= deltaTime
-      // if (enemySpawnTimer <= 0) {
-      //   gameObjects.push(
-      //     new Comet(v(400, -50), randomRangeLeftRight()),
-      //     new Comet(v(200, -50), randomRangeLeftRight()),
-      //     new Comet(v(600, -50), randomRangeLeftRight())
-      //   )
+      if (enemySpawnTimer <= 0) {
+        gameObjects.push(
+          new Comet(v(400, -50), randomRangeLeftRight()),
+          new Comet(v(200, -50), randomRangeLeftRight()),
+          new Comet(v(600, -50), randomRangeLeftRight())
+        )
 
-      //   enemySpawnTimer = enemySpawnCD
-      // }
+        enemySpawnTimer = enemySpawnCD
+      }
 
       // Draw vfx
       for (let i = 0; i < vfxObjects.length; i++) {
@@ -102,6 +102,7 @@
 
       // Remove dead objects and invoke destroy
       quickDestroy(gameObjects, context)
+      quickDestroy(vfxObjects, context)
 
       // log current frame time
       // console.log(new Date().getTime() - frameTime)
@@ -128,8 +129,8 @@
   <canvas
     on:mousedown={handleMousedown}
     bind:this={canvas}
-    width={$width}
-    height={$height}
+    width={WIDTH}
+    height={HEIGHT}
   />
 </main>
 

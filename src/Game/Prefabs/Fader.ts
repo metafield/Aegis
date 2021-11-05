@@ -1,5 +1,5 @@
 import { GameObject } from '../Core/GameObject'
-import { randomRange } from '../Maths/Utils'
+import { clamp, randomRange } from '../Maths/Utils'
 import type { Vector } from '../Maths/Vector'
 
 import type { Context } from '../Types'
@@ -14,7 +14,8 @@ export class Fader extends GameObject {
     public direction: Vector,
     public radius: number = randomRange(5, 35),
     public colour: string,
-    public rate: number
+    public decay: number,
+    public life: number
   ) {
     super()
     this.startRadius = radius
@@ -23,12 +24,14 @@ export class Fader extends GameObject {
   checkCollisions: (context: Context) => void
 
   kill(killer: GameObject) {
+    // console.log(this.life)
     this.dead = true
   }
 
   update({ deltaTime }: Context) {
-    this.radius -= deltaTime / this.rate
-    if (this.radius <= 0) this.kill(this)
+    this.radius -= (deltaTime / 1000) * this.decay * 1.7
+    this.life -= deltaTime
+    if (this.radius <= 0 || this.life <= 0) this.kill(this)
   }
 
   draw({ ctx }: Context) {
