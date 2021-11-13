@@ -2,6 +2,7 @@ import type { Vector } from '../Maths/Vector'
 import type { Context, RadialHitBox } from '../Types'
 
 export abstract class GameObject {
+  tags: string[] = []
   dead: Boolean
   pos: Vector
   velocity: Vector
