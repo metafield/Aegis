@@ -31,6 +31,7 @@ export class Comet extends GameObject implements Triggerable {
     super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
+    this.tags = ['comet']
 
     if (this.radius > this.divideRadius) {
       this.colour = '#ddd'
@@ -47,7 +48,43 @@ export class Comet extends GameObject implements Triggerable {
     this.kill(this)
   }
 
-  checkCollisions: (context: Context) => void
+  checkCollisions({ gameObjects }: Context) {
+    // Lots of ways to be performant here:
+    // wide then narrow, using quadrants etc
+    // best way here is we know that collisions cannot happen in the sky(at the moment)
+    // so return if we are higher than the HEIGHT - City height + this.radius
+    // TODO: decide on and implement max city height, replace this literal
+    const maxCityHeight = 100
+    if (this.pos.y < HEIGHT - (maxCityHeight + this.radius)) {
+      return
+    }
+
+    let distanceFromCenters = Infinity
+    let actualDistance = Infinity
+
+    for (let i = 0; i < gameObjects.length; i++) {
+      // look for cities to hit
+      // Performance: the order of these checks matters. By Tags is fastest.
+      if (
+        !gameObjects[i].tags.includes('city') ||
+        !gameObjects[i].isTriggerable
+      ) {
+        continue
+      }
+
+      distanceFromCenters = gameObjects[i].hitBox.pos.distance(
+        this.hitBox.pos
+      )
+
+      actualDistance =
+        distanceFromCenters -
+        this.hitBox.radius -
+        gameObjects[i].hitBox.radius
+      if (actualDistance <= 0) {
+        gameObjects[i].trigger(this)
+      }
+    }
+  }
 
   draw({ ctx }: Context) {
     // physics info: get the drag to colour it
@@ -90,8 +127,8 @@ export class Comet extends GameObject implements Triggerable {
     this.dead = true
   }
 
-  update({ deltaTime, vfxObjects }: Context) {
-    this.invuln -= deltaTime
+  update(context: Context) {
+    this.invuln -= context.deltaTime
 
     // calc velocity
     this.velocity.zero()
@@ -106,9 +143,9 @@ export class Comet extends GameObject implements Triggerable {
     this.horizontalForce.mulS(0.991 + randomRange(0.004, 0.006))
 
     this.velocity
-      .add(DOWN.mulS2(this.gravity * deltaTime))
-      .add(UP.mulS2(this.drag * deltaTime))
-      .add(this.horizontalForce.mulS2(deltaTime))
+      .add(DOWN.mulS2(this.gravity * context.deltaTime))
+      .add(UP.mulS2(this.drag * context.deltaTime))
+      .add(this.horizontalForce.mulS2(context.deltaTime))
 
     // update hit boxes
     this.pos.add(this.velocity.mulS2(0.01))
@@ -116,13 +153,12 @@ export class Comet extends GameObject implements Triggerable {
     this.hitBox.pos = this.pos.clone()
 
     // drop trails
-    this.trail -= deltaTime
+    this.trail -= context.deltaTime
     // update interval = new time - current elapsed
-
     this.trail = Math.min(this.trail, this.trailInterval)
 
     if (this.trail < 0) {
-      vfxObjects.unshift(
+      context.vfxObjects.unshift(
         new Fader(
           this.pos.clone(),
           this.velocity.clone(),
@@ -138,6 +174,9 @@ export class Comet extends GameObject implements Triggerable {
 
     // death condition
     if (this.pos.y >= HEIGHT) this.kill(this)
+
+    // check collisions
+    this.checkCollisions(context)
   }
 
   destroy({ gameObjects }) {
