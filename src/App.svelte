@@ -6,12 +6,13 @@
     quickDestroy,
     randomRangeLeftRight,
   } from './Game/Maths/Utils'
-  import { v, ZERO } from './Game/Maths/Vector'
+  import { DOWN, v, ZERO } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
   import { HEIGHT, WIDTH } from './Game/Core/game'
   import { Comet } from './Game/Prefabs/Comet'
   import type { GameObject } from './Game/Core/GameObject'
+  import { City } from './Game/Prefabs/City'
 
   let canvas: HTMLCanvasElement
   const buffer = document.createElement('canvas')
@@ -32,7 +33,7 @@
       ctx,
     } as Context
 
-    let enemySpawnCD = 3000
+    let enemySpawnCD = 2000
     let enemySpawnTimer = enemySpawnCD
 
     // FPS and timings
@@ -43,7 +44,17 @@
     const targetFPS = 60
     const renderInterval = 1000 / targetFPS
 
-    gameObjects.push(new Comet(v(400, -50), ZERO.clone()))
+    function start() {
+      // add cities
+      gameObjects.push(
+        new City(v(WIDTH / 12, HEIGHT - 80), ZERO.clone()),
+        new City(v((WIDTH / 12) * 3, HEIGHT - 80), ZERO.clone()),
+        new City(v((WIDTH / 12) * 8, HEIGHT - 80), ZERO.clone()),
+        new City(v((WIDTH / 12) * 10, HEIGHT - 80), ZERO.clone())
+      )
+
+      gameLoop(0)
+    }
 
     function gameLoop(timeMs: number) {
       requestAnimationFrame(gameLoop)
@@ -64,7 +75,7 @@
       visibleCtx.clearRect(0, 0, WIDTH, HEIGHT)
       ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
-      // fix for tab switching:
+      // fix for browser tab switching:
       if (deltaTime > 50) deltaTime = 50
       context.deltaTime = deltaTime
 
@@ -107,7 +118,8 @@
       // log current frame time
       // console.log(new Date().getTime() - frameTime)
     }
-    gameLoop(0)
+
+    start()
   })
 
   function handleMousedown(event) {
