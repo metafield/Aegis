@@ -19,6 +19,7 @@ export class Explosion extends GameObject {
     super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
+    this.tags = ['explosion']
   }
 
   draw({ ctx }: Context) {
