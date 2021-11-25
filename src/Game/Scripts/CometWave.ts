@@ -1,16 +1,13 @@
-import { randomRange, randomRangeLeftRight } from '../../Maths/Utils'
-import { v } from '../../Maths/Vector'
-import { Comet } from '../../Prefabs/Comet'
+import { randomRange, randomRangeLeftRight } from '../Maths/Utils'
+import { v } from '../Maths/Vector'
+import { Comet } from '../Prefabs/Comet'
 
-import type { Context } from '../../Types'
-
-interface Script {
-  update(ctx: Context): void
-}
+import type { Context, Script } from '../Types'
 
 export class CometWave implements Script {
   cometCooldown: number
   cometSpawnTimer: number
+  cometsLeft: number
 
   constructor(
     private amountOfComets: number,
@@ -18,8 +15,9 @@ export class CometWave implements Script {
     private onEnd: Function
   ) {
     // difficulty goes between: 0- 3000ms 9- 300ms
-    this.cometCooldown = 3000 - 270 * 0
+    this.cometCooldown = 3000 - 270 * this.difficulty
     this.cometSpawnTimer = this.cometCooldown
+    this.cometsLeft = this.amountOfComets
   }
 
   update(ctx: Context): void {
@@ -33,7 +31,18 @@ export class CometWave implements Script {
         )
       )
 
+      this.cometsLeft--
+
+      if (this.cometsLeft <= 0) {
+        this.finished()
+        return
+      }
+
       this.cometSpawnTimer = this.cometCooldown
     }
+  }
+
+  finished(): void {
+    this.onEnd()
   }
 }

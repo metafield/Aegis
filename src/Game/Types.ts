@@ -9,6 +9,11 @@ export interface Context {
   vfxObjects: GameObject[]
   deltaTime: number
 }
+
+export interface Script {
+  update(ctx: Context): void
+  finished(): void
+}
 export interface IGameObject {
   dead: Boolean
   pos: Vector

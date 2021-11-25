@@ -1,5 +1,5 @@
 import type { Context } from '../Types'
-import { CometWave } from './Scripts/CometWave'
+import { CometWave } from '../Scripts/CometWave'
 
 export class Director {
   // script to do one wave
