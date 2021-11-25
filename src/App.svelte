@@ -118,23 +118,33 @@
 
 <main>
   <h1>Aegis</h1>
-  <canvas
-    on:mousedown={handleMousedown}
-    bind:this={canvas}
-    width={WIDTH}
-    height={HEIGHT}
-  />
+  <div id="game">
+    <canvas
+      on:mousedown={handleMousedown}
+      bind:this={canvas}
+      width={WIDTH}
+      height={HEIGHT}
+    />
+  </div>
 </main>
 
 <style>
+  #game {
+    position: relative;
+    perspective: 800px;
+    perspective-origin: bottom;
+    transform-style: preserve-3d;
+  }
   canvas {
+    position: absolute;
     background-color: cornflowerblue;
+    transform: rotateZ(0deg) rotateX(0deg) rotateY(0deg);
   }
 
   main {
-    text-align: center;
     padding: 1em;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   h1 {
