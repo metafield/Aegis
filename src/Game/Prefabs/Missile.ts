@@ -15,6 +15,7 @@ export class Missile extends GameObject {
     public target: Vector
   ) {
     super()
+    this.tags.push('missile')
   }
   hitBox?: RadialHitBox
   isTriggerable?: boolean
@@ -56,6 +57,9 @@ export class Missile extends GameObject {
   }
 
   destroy({ gameObjects }: Context) {
-    gameObjects.push(new Explosion(this.pos, ZERO))
+    // add a player tag to the missile explosion so we can track when it hits
+    // and assign score to the correct player
+    // TODO: player needs object and id
+    gameObjects.push(new Explosion(this.pos, ZERO, 'player1_explosion'))
   }
 }

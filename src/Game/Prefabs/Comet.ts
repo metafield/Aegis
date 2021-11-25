@@ -1,7 +1,7 @@
 import { DEBUG, GRAVITY, HEIGHT } from '../Core/game'
 import { GameObject } from '../Core/GameObject'
 import { randomRange } from '../Maths/Utils'
-import { DOWN, LEFT, RIGHT, UP, Vector, ZERO } from '../Maths/Vector'
+import { DOWN, UP, Vector, ZERO } from '../Maths/Vector'
 
 import type { Context, RadialHitBox, Triggerable } from '../Types'
 
@@ -13,6 +13,7 @@ export class Comet extends GameObject implements Triggerable {
   isTriggerable = true
   hitBox = {} as RadialHitBox
 
+  private score = 100
   private colour = '#fff'
   private divideRadius = 24
   private invulnTime = 400
@@ -31,24 +32,39 @@ export class Comet extends GameObject implements Triggerable {
     super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
-    this.tags = ['comet']
+    this.tags.push('comet')
 
     if (this.radius > this.divideRadius) {
       this.colour = '#ddd'
     }
   }
 
-  trigger(evoker: GameObject) {
+  trigger(ctx: Context, evoker: GameObject) {
     if (this.invuln > 0) return
 
     // can set the trigger to false for a one shot
     // or could use a timeout/cool down that we minus deltaTime from
     this.colour = '#00f'
     this.isTriggerable = false
-    this.kill(this)
+    // TODO: Lots of other games engines put this logic here
+    // but logic for kill/hit could be in some extracted place.
+    // not sure yet.
+    // if the killer was a missile then we need to assign points.
+    // TODO: missiles and maybe all game objects should store the playerID
+    // for multiplayer later?
+    if (evoker.tags.includes('player1_explosion')) {
+      ctx.director.addScore(this.score)
+    }
+
+    this.kill()
   }
 
-  checkCollisions({ gameObjects }: Context) {
+  kill() {
+    if (this.invuln > 0) return
+    this.dead = true
+  }
+
+  checkCollisions(ctx: Context) {
     // Lots of ways to be performant here:
     // wide then narrow, using quadrants etc
     // best way here is we know that collisions cannot happen in the sky(at the moment)
@@ -62,26 +78,26 @@ export class Comet extends GameObject implements Triggerable {
     let distanceFromCenters = Infinity
     let actualDistance = Infinity
 
-    for (let i = 0; i < gameObjects.length; i++) {
+    for (let i = 0; i < ctx.gameObjects.length; i++) {
       // look for cities to hit
       // Performance: the order of these checks matters. By Tags is fastest.
       if (
-        !gameObjects[i].tags.includes('city') ||
-        !gameObjects[i].isTriggerable
+        !ctx.gameObjects[i].tags.includes('city') ||
+        !ctx.gameObjects[i].isTriggerable
       ) {
         continue
       }
 
-      distanceFromCenters = gameObjects[i].hitBox.pos.distance(
+      distanceFromCenters = ctx.gameObjects[i].hitBox.pos.distance(
         this.hitBox.pos
       )
 
       actualDistance =
         distanceFromCenters -
         this.hitBox.radius -
-        gameObjects[i].hitBox.radius
+        ctx.gameObjects[i].hitBox.radius
       if (actualDistance <= 0) {
-        gameObjects[i].trigger(this)
+        ctx.gameObjects[i].trigger(ctx, this)
       }
     }
   }
@@ -120,11 +136,6 @@ export class Comet extends GameObject implements Triggerable {
         this.pos.y
       )
     }
-  }
-
-  kill(killer: GameObject) {
-    if (this.invuln > 0) return
-    this.dead = true
   }
 
   update(context: Context) {
@@ -172,19 +183,23 @@ export class Comet extends GameObject implements Triggerable {
       this.trail = this.trailInterval
     }
 
-    // death condition
-    if (this.pos.y >= HEIGHT) this.kill(this)
+    // death condition: off the screen
+    if (this.pos.y >= HEIGHT) this.kill()
 
     // check collisions
     this.checkCollisions(context)
   }
 
   destroy({ gameObjects }) {
+    // Off the screen. Explode then return early.
     if (this.pos.y >= HEIGHT) {
-      gameObjects.push(new Explosion(this.pos, ZERO, this.radius * 1.5))
+      gameObjects.push(
+        new Explosion(this.pos, ZERO, 'comet', this.radius * 1.5)
+      )
       return
     }
 
+    // If it's big then it splits.
     if (this.radius > this.divideRadius) {
       gameObjects.push(
         new Comet(
@@ -195,7 +210,10 @@ export class Comet extends GameObject implements Triggerable {
         new Comet(this.pos.clone(), this.horizontalForce, this.radius / 2)
       )
     } else {
-      gameObjects.push(new Explosion(this.pos, ZERO, this.radius * 1.5))
+      // Regular explosion
+      gameObjects.push(
+        new Explosion(this.pos, ZERO, 'comet', this.radius * 1.5)
+      )
     }
   }
 }

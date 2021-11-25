@@ -2,6 +2,13 @@ import type { Director } from './Core/Director'
 import type { GameObject } from './Core/GameObject'
 import type { Vector } from './Maths/Vector'
 
+export type TAG =
+  | 'city'
+  | 'player1_explosion'
+  | 'explosion'
+  | 'missile'
+  | 'comet'
+
 export interface Context {
   ctx: CanvasRenderingContext2D
   director: Director
@@ -14,6 +21,8 @@ export interface Script {
   update(ctx: Context): void
   finished(): void
 }
+
+// TODO: look into why this is I-GameObject when we have the class
 export interface IGameObject {
   dead: Boolean
   pos: Vector
@@ -21,7 +30,7 @@ export interface IGameObject {
 
   hitBox?: RadialHitBox
   isTriggerable?: boolean
-  trigger?: (evoker: GameObject) => void
+  trigger?: (context: Context, evoker: GameObject) => void
 
   draw: (context: Context) => void
   update: (context: Context) => void
@@ -37,5 +46,5 @@ export interface RadialHitBox {
 export interface Triggerable {
   hitBox: RadialHitBox
   isTriggerable: boolean
-  trigger: (evoker: GameObject) => void
+  trigger: (context: Context, evoker: GameObject) => void
 }

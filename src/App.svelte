@@ -1,19 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { Context } from './Game/Types'
-  import {
-    directionToTarget,
-    quickDestroy,
-    randomRangeLeftRight,
-  } from './Game/Maths/Utils'
-  import { DOWN, v, ZERO } from './Game/Maths/Vector'
+  import { directionToTarget, quickDestroy } from './Game/Maths/Utils'
+  import { v } from './Game/Maths/Vector'
   import { drawBase } from './Game/Prefabs/Base'
   import { Missile } from './Game/Prefabs/Missile'
   import { HEIGHT, WIDTH } from './Game/Core/game'
-  import { Comet } from './Game/Prefabs/Comet'
   import type { GameObject } from './Game/Core/GameObject'
-  import { City } from './Game/Prefabs/City'
   import { Director } from './Game/Core/Director'
+  import { ScoreBoard } from './Game/Prefabs/GUI/ScoreBoard'
 
   let canvas: HTMLCanvasElement
   const buffer = document.createElement('canvas')
@@ -24,6 +19,7 @@
   const firePoint = v(WIDTH / 2, HEIGHT - 45)
   const gameObjects: GameObject[] = []
   const vfxObjects: GameObject[] = []
+  const scoreBoard = new ScoreBoard(v(WIDTH - WIDTH * 0.25, 80))
   const director = new Director()
 
   onMount(async () => {
@@ -45,14 +41,6 @@
     const renderInterval = 1000 / targetFPS
 
     function start() {
-      // add cities
-      gameObjects.push(
-        new City(v(WIDTH / 12, HEIGHT - 80), ZERO.clone()),
-        new City(v((WIDTH / 12) * 3, HEIGHT - 80), ZERO.clone()),
-        new City(v((WIDTH / 12) * 8, HEIGHT - 80), ZERO.clone()),
-        new City(v((WIDTH / 12) * 10, HEIGHT - 80), ZERO.clone())
-      )
-
       gameLoop(0)
     }
 
@@ -96,6 +84,9 @@
         gameObjects[i].update(context)
         gameObjects[i].draw(context)
       }
+
+      // Draw GUI
+      scoreBoard.draw(context)
 
       // render to the screen with double buffering
       visibleCtx.drawImage(buffer, 0, 0)

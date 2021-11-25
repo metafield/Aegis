@@ -15,16 +15,16 @@ export class City extends GameObject {
 
     this.hitBox.pos = pos.clone().add(v(50, 50))
     this.hitBox.radius = 50
-    this.tags = ['city']
+    this.tags.push('city')
   }
 
-  trigger(evoker: GameObject) {
+  trigger(ctx: Context, evoker: GameObject) {
     this.colour = '#00f'
     this.isTriggerable = false
-    this.kill(this)
+    this.kill()
   }
 
-  update({ deltaTime }: Context) {}
+  update(ctx: Context) {}
 
   draw({ ctx }: Context) {
     if (this.dead) return
@@ -50,7 +50,7 @@ export class City extends GameObject {
     ctx.stroke()
   }
 
-  kill(killer: GameObject) {
+  kill() {
     this.dead = true
   }
 

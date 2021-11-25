@@ -1,25 +1,24 @@
 import { GameObject } from '../Core/GameObject'
-import { randomColour } from '../Maths/Utils'
 import type { Vector } from '../Maths/Vector'
-import type { Context, RadialHitBox } from '../Types'
+import type { Context, RadialHitBox, TAG } from '../Types'
 
 export class Explosion extends GameObject {
   dead = false
 
   public hitBox = {} as RadialHitBox
   private radius = 0
-  private maxSize = 30
   private colour = '#FFF'
 
   constructor(
     public pos: Vector,
     public direction: Vector,
+    private creatorTag: TAG,
     public maxRadius: number = 30
   ) {
     super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
-    this.tags = ['explosion']
+    this.tags.push('explosion', creatorTag)
   }
 
   draw({ ctx }: Context) {
@@ -52,23 +51,23 @@ export class Explosion extends GameObject {
     if (this.radius > this.maxRadius) this.dead = true
   }
 
-  checkCollisions({ gameObjects }: Context) {
+  checkCollisions(ctx: Context) {
     let distanceFromCenters = Infinity
     let actualDistance = Infinity
 
-    for (let i = 0; i < gameObjects.length; i++) {
-      if (gameObjects[i].isTriggerable) {
-        distanceFromCenters = gameObjects[i].hitBox.pos.distance(
+    for (let i = 0; i < ctx.gameObjects.length; i++) {
+      if (ctx.gameObjects[i].isTriggerable) {
+        distanceFromCenters = ctx.gameObjects[i].hitBox.pos.distance(
           this.hitBox.pos
         )
 
         actualDistance =
           distanceFromCenters -
           this.hitBox.radius -
-          gameObjects[i].hitBox.radius
+          ctx.gameObjects[i].hitBox.radius
 
         if (actualDistance <= 0) {
-          gameObjects[i].trigger(this)
+          ctx.gameObjects[i].trigger(ctx, this)
         }
       }
     }
