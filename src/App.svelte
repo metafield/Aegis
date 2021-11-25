@@ -13,6 +13,7 @@
   import { Comet } from './Game/Prefabs/Comet'
   import type { GameObject } from './Game/Core/GameObject'
   import { City } from './Game/Prefabs/City'
+  import { Director } from './Game/Core/Director'
 
   let canvas: HTMLCanvasElement
   const buffer = document.createElement('canvas')
@@ -23,6 +24,7 @@
   const firePoint = v(WIDTH / 2, HEIGHT - 45)
   const gameObjects: GameObject[] = []
   const vfxObjects: GameObject[] = []
+  const director = new Director()
 
   onMount(async () => {
     const ctx = buffer.getContext('2d')
@@ -31,10 +33,8 @@
       gameObjects,
       vfxObjects,
       ctx,
+      director,
     } as Context
-
-    let enemySpawnCD = 2000
-    let enemySpawnTimer = enemySpawnCD
 
     // FPS and timings
     let prevTime = 0
@@ -82,19 +82,8 @@
       // TODO: (temp) add base
       drawBase(context, basePos)
 
-      // Gameplay Director
-
-      // spawn things if they are able
-      enemySpawnTimer -= deltaTime
-      if (enemySpawnTimer <= 0) {
-        gameObjects.push(
-          new Comet(v(400, -50), randomRangeLeftRight().mulS(10)),
-          new Comet(v(200, -50), randomRangeLeftRight().mulS(10)),
-          new Comet(v(600, -50), randomRangeLeftRight().mulS(10))
-        )
-
-        enemySpawnTimer = enemySpawnCD
-      }
+      // direct
+      director.update(context)
 
       // Draw vfx
       for (let i = 0; i < vfxObjects.length; i++) {

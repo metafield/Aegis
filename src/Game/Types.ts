@@ -1,8 +1,10 @@
+import type { Director } from './Core/Director'
 import type { GameObject } from './Core/GameObject'
 import type { Vector } from './Maths/Vector'
 
 export interface Context {
   ctx: CanvasRenderingContext2D
+  director: Director
   gameObjects: GameObject[]
   vfxObjects: GameObject[]
   deltaTime: number
