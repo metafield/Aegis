@@ -5,7 +5,7 @@ import type { Context } from '../Types'
 import { Script } from './Script'
 
 export class PreRound extends Script {
-  private initialDelay = 5000
+  private initialDelay = 300
   private time = 0
 
   private cityDelay = 300
