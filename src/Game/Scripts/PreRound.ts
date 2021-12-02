@@ -5,12 +5,13 @@ import type { Context } from '../Types'
 import { Script } from './Script'
 
 export class PreRound extends Script {
-  constructor(public name: string, public onEnd: Function) {
+  constructor(public name: string) {
     super(name)
+
+    console.log('im: ', name)
   }
 
   update(ctx: Context): void {
-    // add cities
     ctx.gameObjects.push(
       new City(v(WIDTH / 12, HEIGHT - 80), ZERO.clone()),
       new City(v((WIDTH / 12) * 3, HEIGHT - 80), ZERO.clone()),

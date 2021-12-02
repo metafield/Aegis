@@ -5,8 +5,6 @@ import type { Script } from './Scripts/Script'
 
 export interface AnyScript extends Script {}
 
-export type DIFFICULTY = 'EASY' | 'NORMAL' | 'HARD'
-
 export type TAG =
   | 'city'
   | 'player1_explosion'
