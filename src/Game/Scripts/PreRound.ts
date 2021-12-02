@@ -4,7 +4,7 @@ import { City } from '../Prefabs/City'
 import type { Context } from '../Types'
 import { Script } from './Script'
 
-export class NewRound extends Script {
+export class PreRound extends Script {
   constructor(public name: string, public onEnd: Function) {
     super(name)
   }
