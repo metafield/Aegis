@@ -1,10 +1,13 @@
 import { WIDTH, HEIGHT } from '../Core/game'
 import { v, ZERO } from '../Maths/Vector'
 import { City } from '../Prefabs/City'
-import type { Context, Script } from '../Types'
+import type { Context } from '../Types'
+import { Script } from './Script'
 
-export class NewRound implements Script {
-  constructor(private onEnd: Function) {}
+export class NewRound extends Script {
+  constructor(public name: string, public onEnd: Function) {
+    super(name)
+  }
 
   update(ctx: Context): void {
     // add cities
@@ -16,9 +19,5 @@ export class NewRound implements Script {
     )
 
     this.finished()
-  }
-
-  finished(): void {
-    this.onEnd()
   }
 }

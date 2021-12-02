@@ -1,6 +1,11 @@
 import type { Director } from './Core/Director'
 import type { GameObject } from './Core/GameObject'
 import type { Vector } from './Maths/Vector'
+import type { Script } from './Scripts/Script'
+
+export interface AnyScript extends Script {}
+
+export type DIFFICULTY = 'EASY' | 'NORMAL' | 'HARD'
 
 export type TAG =
   | 'city'
@@ -15,11 +20,6 @@ export interface Context {
   gameObjects: GameObject[]
   vfxObjects: GameObject[]
   deltaTime: number
-}
-
-export interface Script {
-  update(ctx: Context): void
-  finished(): void
 }
 
 // TODO: look into why this is I-GameObject when we have the class
