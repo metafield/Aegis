@@ -28,6 +28,5 @@ export class Director {
   update(ctx: Context) {
     this.arcadeMode.update(ctx)
     this.runner.update(ctx)
-    console.log(ctx.gameObjects.length)
   }
 }
