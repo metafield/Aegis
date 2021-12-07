@@ -1,8 +1,10 @@
+import { currentRound } from '../../store/GameUI'
 import { WIDTH, HEIGHT } from '../Core/game'
 import { v, ZERO } from '../Maths/Vector'
 import { City } from '../Prefabs/City'
 import type { Context } from '../Types'
 import { Script } from './Script'
+import { Timer } from './utils/Timer'
 
 export class PreRound extends Script {
   private initialDelay = 300
@@ -15,10 +17,13 @@ export class PreRound extends Script {
   private cityXMul = [1, 3, 8, 10]
   private cityY = HEIGHT - 80
 
-  constructor(public name: string) {
-    super(name)
+  private displayTime = new Timer(2000)
+
+  constructor(public roundNo: number) {
+    super(`Round${roundNo}`)
 
     // TODO: display round
+    currentRound.set(roundNo)
   }
 
   update(ctx: Context): void {
@@ -43,7 +48,8 @@ export class PreRound extends Script {
       this.cities++
       this.cityTime = 0
     } else {
-      this.finished()
+      // keep alive to show round start animations
+      this.displayTime.tick(ctx.deltaTime, () => this.finished())
     }
   }
 }

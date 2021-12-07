@@ -9,6 +9,7 @@
   import type { GameObject } from './Game/Core/GameObject'
   import { Director } from './Game/Core/Director'
   import { ScoreBoard } from './Game/Prefabs/GUI/ScoreBoard'
+  import Intro from './Game/GUI/Intro.svelte'
 
   let canvas: HTMLCanvasElement
   const buffer = document.createElement('canvas')
@@ -118,7 +119,8 @@
 
 <main>
   <h1>Aegis</h1>
-  <div id="game">
+  <div id="game" style="--game-width:{WIDTH}px; --game-height:{HEIGHT}px;">
+    <Intro />
     <canvas
       on:mousedown={handleMousedown}
       bind:this={canvas}
@@ -131,14 +133,17 @@
 <style>
   #game {
     position: relative;
-    perspective: 800px;
-    perspective-origin: bottom;
-    transform-style: preserve-3d;
+    display: flex;
+    flex-direction: column;
+    max-width: var(--game-width);
+    height: var(--game-height);
+    overflow: hidden;
   }
   canvas {
     position: absolute;
+    top: 0;
+    left: 0;
     background-color: cornflowerblue;
-    transform: rotateZ(0deg) rotateX(0deg) rotateY(0deg);
   }
 
   main {
