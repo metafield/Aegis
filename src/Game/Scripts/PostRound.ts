@@ -10,7 +10,7 @@ export class PostRound extends Script {
 
   scoreCities = (ctx: Context) => {
     /* 
-      Cities were not being found in the correct with a for loop. The next best thing is
+      Cities were not being found in the correct order with a for loop. The next best thing is
       to pull out each city and sort them. Filter is great here because we are not in a game
       loop and it will only be ran once.
     */
