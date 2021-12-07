@@ -1,13 +1,15 @@
 <script lang="ts">
-  import { afterUpdate, beforeUpdate, onMount } from 'svelte'
+  import { afterUpdate, onMount } from 'svelte'
   import { currentRound } from '../../store/GameUI'
   import gsap from 'gsap'
 
   let ref: HTMLHeadingElement
   let timeline: GSAPTimeline
-  $: message = `Round ${$currentRound}`
+  let curRound = 0
 
-  function trigger(round) {
+  function triggerAnimation() {
+    curRound = $currentRound
+    ref.innerText = `Round ${curRound}`
     timeline.restart()
   }
 
@@ -16,17 +18,30 @@
     timeline.fromTo(
       ref,
       { opacity: 0, scale: 10 },
-      { opacity: 1, scale: 1, duration: 1 }
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 1,
+      }
     )
-    timeline.to(ref, { opacity: 0, scale: 10, delay: 1 })
+    timeline.to(ref, {
+      opacity: 0,
+      scale: 10,
+      delay: 1,
+      onStart: () => {
+        ref.textContent = 'Start!'
+      },
+    })
   })
 
   afterUpdate(() => {
-    trigger($currentRound)
+    if ($currentRound != curRound) {
+      triggerAnimation()
+    }
   })
 </script>
 
-<h1 bind:this={ref}>{message}</h1>
+<h1 bind:this={ref}>Round</h1>
 
 <style>
   h1 {
