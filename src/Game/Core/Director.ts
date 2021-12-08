@@ -9,11 +9,14 @@ export class Director {
   private runner = new TaskRunner()
   private arcadeMode: Arcade
   constructor() {
+    /* 
+      A task is added to a runner. A Scenario/Task creator then
+      uses game logic to populate the scripts for this runner. 
+    */
     const arcadeTask = this.runner.add({
       name: 'ArcadeMode',
       scripts: [],
     })
-
     this.arcadeMode = new Arcade('ArcadeModeScenario', arcadeTask.scripts)
   }
 

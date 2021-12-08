@@ -10,6 +10,7 @@
   import { Director } from './Game/Core/Director'
   import { ScoreBoard } from './Game/Prefabs/GUI/ScoreBoard'
   import Intro from './Game/GUI/Intro.svelte'
+  import Title from './Game/GUI/Title.svelte'
 
   let canvas: HTMLCanvasElement
   const buffer = document.createElement('canvas')
@@ -118,8 +119,8 @@
 </script>
 
 <main>
-  <h1>Aegis</h1>
   <div id="game" style="--game-width:{WIDTH}px; --game-height:{HEIGHT}px;">
+    <Title />
     <Intro />
     <canvas
       on:mousedown={handleMousedown}
@@ -133,12 +134,11 @@
 <style>
   #game {
     position: relative;
-    display: flex;
-    flex-direction: column;
     max-width: var(--game-width);
     height: var(--game-height);
     overflow: hidden;
   }
+
   canvas {
     position: absolute;
     top: 0;
@@ -148,15 +148,6 @@
 
   main {
     padding: 1em;
-    display: flex;
-    flex-direction: column;
-  }
-
-  h1 {
-    color: blueviolet;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
   }
 
   @media (min-width: 640px) {

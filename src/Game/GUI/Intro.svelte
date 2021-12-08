@@ -45,10 +45,11 @@
 
 <style>
   h1 {
-    position: relative;
-    align-self: center;
-    top: 340px;
     z-index: 1;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     pointer-events: none;
   }
 </style>
