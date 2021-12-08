@@ -1,23 +1,23 @@
 import type { AnyScript, Context } from '../Types'
 import { CometWave } from '../Scripts/CometWave'
-import { Arcade } from '../Scripts/TaskCreators/Arcade'
+import { Arcade } from '../Scripts/Scenarios/Arcade'
 import { TaskRunner } from '../Scripts/TaskRunner/TaskRunner'
 
 export class Director {
   // Attributes
   private score = 0
   private runner = new TaskRunner()
-  private arcadeMode: Arcade
   constructor() {
     /* 
-      A task is added to a runner. A Scenario/Task creator then
+      A task is added to a runner. A Scenario then
       uses game logic to populate the scripts for this runner. 
     */
-    const arcadeTask = this.runner.add({
+
+    this.runner.add({
       name: 'ArcadeMode',
       scripts: [],
+      scenario: new Arcade('ArcadeModeScenario'),
     })
-    this.arcadeMode = new Arcade('ArcadeModeScenario', arcadeTask.scripts)
   }
 
   addScore(amount: number): void {
@@ -29,7 +29,6 @@ export class Director {
   }
 
   update(ctx: Context) {
-    this.arcadeMode.update(ctx)
     this.runner.update(ctx)
   }
 }

@@ -1,8 +1,10 @@
-import type { AnyScript, Context } from '../../Types'
+import type { AnyScript, Context, Scenario } from '../../Types'
 
-interface Task {
+// TODO: maybe scenario should be its own thing
+export interface Task {
   scripts: AnyScript[]
   name: string
+  scenario: Scenario
 }
 
 export class TaskRunner {
@@ -12,7 +14,14 @@ export class TaskRunner {
   constructor() {}
 
   add(task: Task): Task {
+    // register task
     this.tasks.set(task.name, task)
+    // listen to the scenario for scripts
+    task.scenario.addEventListener('onNewScripts', (scripts) => {
+      task.scripts.push(...scripts)
+    })
+    // start the scenario
+    task.scenario.start()
     return task
   }
 
@@ -36,6 +45,10 @@ export class TaskRunner {
     if (this.paused) return
 
     for (let task of this.tasks.values()) {
+      // update the scenario as it may need to add more scripts to the task
+      task.scenario.update(ctx)
+
+      // skip this task if there is still no new work
       if (task.scripts.length == 0) continue
 
       if (task.scripts[0].ended) {

@@ -8,6 +8,10 @@ export class PostRound extends Script {
   private cityTimer = new Timer(400)
   private cities: GameObject[]
 
+  constructor(name: string) {
+    super(name)
+  }
+
   scoreCities = (ctx: Context) => {
     /* 
       Cities were not being found in the correct order with a for loop. The next best thing is

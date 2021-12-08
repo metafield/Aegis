@@ -3,6 +3,10 @@ import type { GameObject } from './Core/GameObject'
 import type { Vector } from './Maths/Vector'
 import type { Script } from './Scripts/Script'
 
+export interface Scenario extends Script {
+  start(): void
+}
+
 export interface AnyScript extends Script {}
 
 export type TAG =
