@@ -7,16 +7,12 @@ import { Script } from './Script'
 import { Timer } from './utils/Timer'
 
 export class PreRound extends Script {
-  private initialDelay = 300
-  private time = 0
-
-  private cityDelay = 300
-  private cityTime = 0
-
-  private cities = 0
+  private citiesPlaced = 0
   private cityXMul = [1, 3, 8, 10]
   private cityY = HEIGHT - 80
 
+  private initialDelay = new Timer(300)
+  private cityInterval = new Timer(300)
   private displayTime = new Timer(2000)
 
   constructor(public roundNo: number) {
@@ -27,29 +23,26 @@ export class PreRound extends Script {
   }
 
   update(ctx: Context): void {
-    this.time += ctx.deltaTime
-    if (this.initialDelay > this.time) {
+    if (this.initialDelay.tick(ctx.deltaTime) == false) {
       return
     }
 
-    if (this.cities < 4) {
-      this.cityTime += ctx.deltaTime
-      if (this.cityDelay > this.cityTime) {
-        return
-      }
-
-      ctx.gameObjects.push(
-        new City(
-          v((WIDTH / 12) * this.cityXMul[this.cities], this.cityY),
-          ZERO.clone()
-        )
-      )
-
-      this.cities++
-      this.cityTime = 0
+    if (this.citiesPlaced < 4) {
+      this.cityInterval.tick(ctx.deltaTime, () => this.placeCity(ctx))
     } else {
       // keep alive to show round start animations
       this.displayTime.tick(ctx.deltaTime, () => this.finished())
     }
+  }
+
+  private placeCity(ctx: Context) {
+    ctx.gameObjects.push(
+      new City(
+        v((WIDTH / 12) * this.cityXMul[this.citiesPlaced], this.cityY),
+        ZERO.clone()
+      )
+    )
+
+    this.citiesPlaced++
   }
 }
