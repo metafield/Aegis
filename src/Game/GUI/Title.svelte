@@ -1,10 +1,20 @@
-<div>
-  <h1 class="title">Aegis</h1>
+<script lang="ts">
+  import { stage } from '../../store/GameUI'
+
+  let hidden = $stage != 'TITLE'
+</script>
+
+<div class:hidden>
+  <h1 class="title">Aegis {$stage != 'TITLE'}</h1>
   <button>Arcade Mode</button>
   <button>Credits</button>
 </div>
 
 <style>
+  .hidden {
+    display: none;
+  }
+
   div {
     position: relative;
     display: grid;
