@@ -42,3 +42,8 @@ continue;
 }
 }
 }
+
+vector type is becoming annoying - refactor to merge vector and abstract
+to make typings look way nice. It does not matter if a vector is using the abstract or not
+
+GameObjects need some base functionality this is one of the rare good use cases for inheritance.

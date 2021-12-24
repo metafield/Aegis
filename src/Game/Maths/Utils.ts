@@ -1,10 +1,12 @@
-import { Vector } from 'vector2d'
-import type { Context, GameObject } from '../Types'
-import { LEFT, RIGHT } from './Vector'
-
-export const GRAVITY = 9.8
+import type { GameObject } from '../Core/GameObject'
+import type { Context } from '../Types'
+import { LEFT, RIGHT, v, Vector } from './Vector'
 
 const { floor, random } = Math
+
+export function clamp(num: number, min: number, max: number): number {
+  return Math.min(Math.max(num, min), max)
+}
 
 export function randomRange(min: number, max: number): number {
   return floor(random() * max) + min
@@ -14,16 +16,16 @@ export function randomDirection() {
   return floor(random() * 2 - 1)
 }
 
-export function randomLeftRight() {
-  return randomRange(1, 2) % 2 == 0 ? LEFT.clone() : RIGHT.clone()
+export function randomLeftOrRight() {
+  return randomRange(1, 2) % 2 == 0 ? LEFT : RIGHT
 }
 
+export function randomRangeLeftRight() {
+  return randomLeftOrRight().mulS2(random()).normalise()
+}
 
 export function directionToTarget(pos: Vector, target: Vector) {
-  let directionNonNormalised = new Vector(
-    target.x - pos.x,
-    target.y - pos.y
-  )
+  let directionNonNormalised = v(target.x - pos.x, target.y - pos.y)
   return directionNonNormalised.normalise()
 }
 
@@ -53,9 +55,6 @@ export function quickDestroy(
 }
 
 export function randomHex() {
-
-  const { floor, random } = Math
-
   return floor(random() * 255)
     .toString(16)
     .padStart(2, '0')

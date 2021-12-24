@@ -1,19 +1,22 @@
-import type { AbstractVector, Vector } from 'vector2d'
-import { ZERO } from '../Maths/Vector'
-import type { Context, GameObject, RadialHitBox } from '../Types'
+import { GameObject } from '../Core/GameObject'
+import { Vector, ZERO } from '../Maths/Vector'
+import type { Context, RadialHitBox } from '../Types'
 import { Explosion } from './Explosion'
 
-export class Missile implements GameObject {
+export class Missile extends GameObject {
   public dead = false
 
   private speed = 0.7
   private minTargetDist = Infinity
 
   constructor(
-    public pos: Vector | AbstractVector,
-    public direction: Vector | AbstractVector,
+    public pos: Vector,
+    public direction: Vector,
     public target: Vector
-  ) {}
+  ) {
+    super()
+    this.tags.push('missile')
+  }
   hitBox?: RadialHitBox
   isTriggerable?: boolean
 
@@ -48,14 +51,15 @@ export class Missile implements GameObject {
     // then we reached the target and now we need to go boom
     const change = lastMin - this.minTargetDist
 
-    console.log()
     if (change < Math.abs(0.1)) {
       this.dead = true
     }
   }
 
   destroy({ gameObjects }: Context) {
-    console.log('destroy: Missile')
-    gameObjects.push(new Explosion(this.pos, ZERO))
+    // add a player tag to the missile explosion so we can track when it hits
+    // and assign score to the correct player
+    // TODO: player needs object and id
+    gameObjects.push(new Explosion(this.pos, ZERO, 'player1_explosion'))
   }
 }

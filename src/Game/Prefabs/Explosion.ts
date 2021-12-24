@@ -1,35 +1,30 @@
-import type { AbstractVector, Vector } from 'vector2d'
-import { randomColour } from '../Maths/Utils'
-import { ONE } from '../Maths/Vector'
-import type { Context, GameObject, RadialHitBox } from '../Types'
+import { GameObject } from '../Core/GameObject'
+import type { Vector } from '../Maths/Vector'
+import type { Context, RadialHitBox, TAG } from '../Types'
 
-export class Explosion implements GameObject {
+export class Explosion extends GameObject {
   dead = false
 
   public hitBox = {} as RadialHitBox
   private radius = 0
-  private maxSize = 30
-  private colour = randomColour()
+  private colour = '#FFF'
 
   constructor(
-    public pos: Vector | AbstractVector,
-    public direction: Vector | AbstractVector,
+    public pos: Vector,
+    public direction: Vector,
+    private creatorTag: TAG,
     public maxRadius: number = 30
   ) {
+    super()
     this.hitBox.pos = pos.clone()
     this.hitBox.radius = this.radius
+    this.tags.push('explosion', creatorTag)
   }
 
   draw({ ctx }: Context) {
+    // uses hit box to help with debugging
     ctx.strokeStyle = this.colour
     ctx.lineWidth = 4
-    ctx.beginPath()
-    ctx.arc(this.pos.x, this.pos.y, this.radius, 0, Math.PI * 2, true)
-    ctx.stroke()
-
-    // hit box
-    ctx.strokeStyle = '#f00'
-    ctx.lineWidth = 1
     ctx.beginPath()
     ctx.arc(
       this.hitBox.pos.x,
@@ -56,29 +51,27 @@ export class Explosion implements GameObject {
     if (this.radius > this.maxRadius) this.dead = true
   }
 
-  checkCollisions({ gameObjects }: Context) {
+  checkCollisions(ctx: Context) {
     let distanceFromCenters = Infinity
     let actualDistance = Infinity
 
-    for (let i = 0; i < gameObjects.length; i++) {
-      if (gameObjects[i].isTriggerable) {
-        distanceFromCenters = gameObjects[i].hitBox.pos.distance(
+    for (let i = 0; i < ctx.gameObjects.length; i++) {
+      if (ctx.gameObjects[i].isTriggerable) {
+        distanceFromCenters = ctx.gameObjects[i].hitBox.pos.distance(
           this.hitBox.pos
         )
 
         actualDistance =
           distanceFromCenters -
           this.hitBox.radius -
-          gameObjects[i].hitBox.radius
+          ctx.gameObjects[i].hitBox.radius
 
         if (actualDistance <= 0) {
-          gameObjects[i].trigger(this)
+          ctx.gameObjects[i].trigger(ctx, this)
         }
       }
     }
   }
 
-  destroy() {
-    console.log('destroy: Explosion')
-  }
+  destroy() {}
 }
