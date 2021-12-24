@@ -20,6 +20,11 @@ export class TaskRunner {
     task.scenario.addEventListener('onNewScripts', (scripts) => {
       task.scripts.push(...scripts)
     })
+
+    // listen for when brand new tasks need to be created like say from GameStart to Arcade mode.
+    task.scenario.addEventListener('onNewTask', (task) => {
+      // TODO: register new task (call add)
+    })
     // start the scenario
     task.scenario.start()
     return task

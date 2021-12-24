@@ -23,15 +23,11 @@ export class Arcade extends Script implements Scenario {
 
     this.newScripts([
       new PreRound(this.currentRound),
-      new CometWave('wave' + this.currentRound, 2, 1),
+      new CometWave('wave' + this.currentRound, 10, 1),
       postRound,
     ])
 
     this.currentRound++
-  }
-
-  newScripts(scripts: AnyScript[]) {
-    this.events.onNewScripts(scripts)
   }
 
   update(ctx: Context): void {}

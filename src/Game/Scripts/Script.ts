@@ -1,6 +1,8 @@
-import type { Context } from '../Types'
+import type { AnyScript, Context } from '../Types'
+import type { Task } from './TaskRunner/TaskRunner'
 
-type ScriptEvent = 'onNewScripts'
+type ScriptEvent = 'onNewScripts' | 'onNewTask'
+
 type ScriptEventHandler = (payload) => void
 
 export abstract class Script {
@@ -9,12 +11,22 @@ export abstract class Script {
 
   protected events: Record<ScriptEvent, ScriptEventHandler> = {
     onNewScripts: undefined,
+    onNewTask: undefined,
   }
 
   constructor(public name: string) {}
 
   public addEventListener(event: ScriptEvent, cb: ScriptEventHandler) {
     this.events[event] = cb
+  }
+
+  // these functions send payload to subscribers
+  protected newScripts(scripts: AnyScript[]) {
+    this.events.onNewScripts(scripts)
+  }
+
+  protected newTask(task: Task) {
+    this.events.onNewTask(task)
   }
 
   protected finished() {
